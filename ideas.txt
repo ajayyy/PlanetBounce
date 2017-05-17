@@ -1,0 +1,216 @@
+bounce on planets (angry birds space)
+bounce eachother into black holes and stars
+can shoot tiny particles that slow you down a bit and slow the other a bit (but need to reload)
+
+get bigger
+particles do more and more damage (can be pushed farther away) and can be shot in chuncks (two at a time)
+
+collect points on planets
+
+
+
+STUFF TO DO:
+
+when player connects, set a new long to current time millis
+- make coords of players send to connected player DONE (weird crashing bug tho)
+
+
+
+DONE
+once player receives the successfull connect notice, it sets its own long to current time millis
+when player sends key presses, it also sends current time millis - long START LINE 80
+when server/other player recieves it, they will check if it is under there count (to make sure no time travel happened), then  the difference to move the player extra if needed, or move the player back if needed (like delta but also implement disable delta)
+
+WORKING FOR NOW
+
+Implement system where bounces are in sync
+
+TRY the if x and y are off by a bit set strategy for now
+
+
+NOW:
+SAVE INFO IN A BUFFER OF EACH FRAME   //1.5 seconds for now  
+Time it happened, x, y, xspeed, yspeed
+
+PROGRESSED TO HERE:
+
+STUFF HERE           maybe not deleting enough     new system working ok but needs improvements  
+
+      making old state store right and left boolean values                  getoldstate returning null
+
+      HAVE TO CAP THE FPS AT 60 ON SERVER TOO ---done
+
+ALSO, random null pointer exceptions ???
+
+weird null pointer exception     java.lang.NullPointerException
+	at com.ajayinkingston.bouncee.server.Main.getOldStateAtTime(Main.java:306)
+	at com.ajayinkingston.bouncee.server.Main.onMessageRecieved(Main.java:197)
+
+Exception in thread "Thread-5" java.lang.NullPointerException
+	at com.ajayinkingston.bouncee.server.Main.run(Main.java:169)
+
+KJHSDJHADKJADHK
+
+WORKING GREAT
+
+
+ON TO NEXT THING
+
+
+
+DONE YAYAYAYAYAY
+gets check message and sees if at that time we were at that position
+
+if not, then make up for the frames missed with those coordinates in place for whatever was there   (like the server's thing)
+
+
+HERE:::::::
+
+
+STARTER::::::::::::::::::::   ABOVE WORKING
+
+doesnt have the max distance for gravoty maybe or gravity is just plain different on server 
+
+IF A PLAYER PRESSED A BUTTON IN THE PAST INSTEAD OF MULTIPLYING BY DELTA TIME, JUST EXTRAPOLATE THE POSITION FROM THERE (run a simulation of them pressing the button since then at 60 fps)     ---put this on client side too
+
+
+
+::::::::::::  SHOOTING WORKS BUT NOW MAKE SURE CHECK ONLY TRIGGERS WHEN IT KNOWS FOR SURE SERVER RECIEVED COMMAND:::::::::
+
+
+OK NOW THE TIMES HAVE TO BE WAY MORE SYNCHRONISED    DEFINETLY SOMETHING NEEDED HERE    :::::::::::::::::::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+::::::::::::::::::::::::::::WOOOOHOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
+::::::::::::::::::::::::::::::::YAYAYAY
+
+
+
+
+::::::::::::::::::       EVERYTHING WORKS, ALL THATS LEFT IS TO MAKE CLIENT SMOOTH OUT SERVERS CHANGES
+								Basically, the client can keep the old client running at the same time as the new one and slowly adjust to new data!!!!!
+
+								so have a new player(current x,y,speeds) and slowly up the percentage close to new. If another connects and it is not at 100%, then delete the player and make a new player(current with percents calculated x,y,speeds)
+
+
+
+
+
+								NOW MAKE SHOOTING TRIGGER TRANSFORMATION PLAYER
+
+other player check is now broken yay...
+
+delta not being used with client player thing
+
+
+
+
+::::::: NOW IMPLEMENT ALL NEW FEATURES TO THE ADDITIONAL PLAYERS IN MULTIPLAYER
+
+:::::::::::::::::LIST OF THEM
+							:::::::: old states --and responding to them like server ::::::::DONE ????
+							::::::::::: transformationPlayer   --done that
+							:::::::::::::::: shooting
+
+
+
+
+::::::::::::::::;;;--------------------------------------TRY GETTING TIME OF OLD STATE FOR DELTA IN PLAYER CHECK
+
+so basically it is reseting threading problems ya and stuff and stuff bt also myabe the precent wrong stuff oj
+
+
+
+SOMETIMES WHEN PACKETS PILE UP THERE IS TELEPORTATION      (maybe somehow make it thread safe)
+
+][;;][;];][;][;][;][;][;][;][;][;]
+  I guess try and redo it all
+];];][;][;][;][;][;][;][;][;][;]
+
+STILL having stuttering issues, and when a lot of people there, school computer like stuttering
+
+
+TCP PACKETS GETTING CLUMPED
+
+maybe I need to just put it all into an array list of pending actions and do them one after the other
+???
+?
+?
+?
+?
+?
+?
+?
+?
+?
+?
+??
+?
+?
+?
+?
+?
+?
+
+THEN:
+	Try to make this work for not client player too.
+
+AFTER THAT:
+	try to add other stuff from https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization
+
+EVEN LATER:
+	add some sort of interlopation to make the server athoritative changes seem as if you are not changing but just moving speeds (very quicly though)
+ANOTHER THING THAT MIGHT HELP:
+	locking fps to 30 might be a good idea (basically if the fps is lower than that then run 2 frames instead of just multiplying by delat)
+	this should fic client-server incondistancies a bit if the above doesn't work, or just improve it
+AND TO SAVE RAM  (AND CPU):
+	make client only know about players in a certain radius, and connect/disconnect when players leave and enter radius
+IF NOTHING WORKS:
+	just make the client wait until the server lets them move and make speeds not add or subtract  (PLEASE DON'T DO THIS)
+
+MAYBE:ALSO:
+	kick people if they are lagging badly
+
+	while doing checks stop game code
+ANOTHER ONE:
+	remove really small planets
+	Instructions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Done:
+
+- revamp bounce with 360-atan2(xspeed,yspeed)+angle formula ----IMPORTANT
+
+
+Later:
+
+Rocket mode (explosions)
+Collect star mode (mario vs luigi)  (low amount of people and only a few planets)
+
