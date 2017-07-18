@@ -8,24 +8,24 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 
-public class ClientPlayer {
-	float x,y;
-	
+public class ClientPlayer extends Entity{
 	Random rand = new Random();
 	
 	double rotation = -1000000000; //might be needed for camera rotations
 	
 	Texture image;
 	
-	float speed = 500, maxspeed = 500, friction = 100;
-	float xspeed,yspeed;
+	float speed = 500, maxspeed = 500;
 	
 //	float bounceheight = 1200; //Now set in planet class
 	
 	float gravityx,gravityy;//just for now
 	
-	int size = 50;
-	int startsize = 50;
+	int startmass = 50;
+	boolean massChangeAni;
+	int aniMass;
+	int aniStartMass;
+	int aniMassChange;
 	
 	double closestangle = Math.PI;
 	
@@ -43,16 +43,14 @@ public class ClientPlayer {
 	Player transformationPlayer;
 	float transformationPlayerPercent = -1;
 	
-//	int mass;
-	boolean massChangeAni;
-	int aniMass;
-	int aniStartMass;
-	int aniMassChange;
+	
 	
 	int imagenum;
 	
 	public ClientPlayer(Splats splats){
 		y = 800;
+		
+		mass = startmass;
 		
 		start = System.currentTimeMillis(); //incase somehow onconnect is not called
 		
@@ -61,7 +59,15 @@ public class ClientPlayer {
 		imagenum = rand.nextInt(splats.playerImages.length);
 	}
 	
-	public void render(final Splats splats, boolean simulation){
+	public void render(Splats splats){
+		splats.batch.begin();
+		float factor = 1.3f;
+		splats.batch.draw(splats.shadow, x-getSize()/2*factor, y-getSize()/2*factor, getSize()*factor, getSize()*factor);
+		splats.batch.draw(splats.playerImages[imagenum], x-getSize()/2, y-getSize()/2, getSize(), getSize());
+		splats.batch.end();
+	}
+	
+	public void update(final Splats splats, double delta, boolean simulation){
 		start = 0;
 		boolean moved = false;
 		if(!simulation){
@@ -72,7 +78,7 @@ public class ClientPlayer {
 			if(transformationPlayerPercent >= 0){
 				x = transformationPlayer.x + (x - transformationPlayer.x) * (transformationPlayerPercent/100f);
 				y = transformationPlayer.y + (y - transformationPlayer.y) * (transformationPlayerPercent/100f);
-				transformationPlayerPercent += 200*Gdx.graphics.getDeltaTime();
+				transformationPlayerPercent += 200*delta;
 				if(transformationPlayerPercent >= 100){
 					transformationPlayerPercent = -1;
 					transformationPlayer = null;
@@ -80,12 +86,6 @@ public class ClientPlayer {
 					y = this.y;
 				}
 			}
-			
-			splats.batch.begin();
-			float factor = 1.3f;
-			splats.batch.draw(splats.shadow, x-size/2*factor, y-size/2*factor, size*factor, size*factor);
-			splats.batch.draw(splats.playerImages[imagenum], x-size/2, y-size/2, size, size);
-			splats.batch.end();
 			
 //			splats.shapeRenderer.circle(x, y, size/2);
 //			splats.shapeRenderer.setColor(Color.BROWN);
@@ -99,7 +99,7 @@ public class ClientPlayer {
 //				if(aniMass == 0){
 //					float distance = (aniStartMass + aniMassChange) - size;
 //					float speed = ((aniMassChange - distance) * 1+1)/10f;
-//					size += 150*Gdx.graphics.getDeltaTime();
+//					size += 150*delta;
 //					if(size - aniStartMass >=  + aniMassChange){
 //						aniMass++;
 //						size = (int) (aniStartMass + aniMassChange);
@@ -109,17 +109,17 @@ public class ClientPlayer {
 //				}else if(aniMass == 1){
 //					float distance = size - (aniStartMass-aniMassChange);
 //					float speed = (aniMassChange - distance) * 1;
-//					size -= 150*Gdx.graphics.getDeltaTime();
+//					size -= 150*delta;
 //					if(size <= aniStartMass-aniMassChange){
 //						aniMass++;
 //						size = (int) (aniStartMass-aniMassChange);
 //					}
 //				}else{
-					float distance = (aniStartMass + aniMassChange) - size;
+					float distance = (aniStartMass + aniMassChange) - getSize();
 					float speed = (aniMassChange - distance) * 1;
-					size += 150*Gdx.graphics.getDeltaTime();
-					if(size - aniStartMass >= aniMassChange){
-						size = aniStartMass + aniMassChange;
+					mass += 150*delta;
+					if(mass - aniStartMass >= aniMassChange){
+						mass = aniStartMass + aniMassChange;
 						massChangeAni = false;
 						aniMass = 0;
 					}
@@ -131,7 +131,7 @@ public class ClientPlayer {
 		boolean right = false;
 		if((Gdx.input.isKeyPressed(Input.Keys.D) && !simulation) || (simulation && this.right)){
 //			//act like 60 fps all the time
-//			double delta = Gdx.graphics.getDeltaTime();
+//			double delta = delta;
 //			double gooddelta = 1/60d;//fps we want
 //			double i = gooddelta;//for the loop
 //			player.x = x;
@@ -148,11 +148,11 @@ public class ClientPlayer {
 //					yspeed+=Math.sin(closestangle+Math.toRadians(90)) * speed * (delta-i);
 //				}
 //			}
-//			splats.shapeRenderer.line(new Vector2(x,y), new Vector2((float) (Math.cos(closestangle+1.5708f) * 100 * speed*Gdx.graphics.getDeltaTime()),(float) Math.sin(closestangle+1.5708f) * 100 * speed*Gdx.graphics.getDeltaTime()));
+//			splats.shapeRenderer.line(new Vector2(x,y), new Vector2((float) (Math.cos(closestangle+1.5708f) * 100 * speed*delta),(float) Math.sin(closestangle+1.5708f) * 100 * speed*delta));
 //			splats.shapeRenderer.end();
-//			yspeed-=speed*5*Gdx.graphics.getDeltaTime();
-			xspeed+=Math.cos(closestangle+Math.toRadians(90)) * 1 * speed*Gdx.graphics.getDeltaTime();//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed+=Math.sin(closestangle+Math.toRadians(90)) * 1 * speed*Gdx.graphics.getDeltaTime();
+//			yspeed-=speed*5*delta;
+			xspeed+=Math.cos(closestangle+Math.toRadians(90)) * 1 * speed*delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed+=Math.sin(closestangle+Math.toRadians(90)) * 1 * speed*delta;
 //			splats.shapeRenderer.begin(ShapeType.Filled);
 //			splats.shapeRenderer.setColor(Color.GREEN);
 			if(!simulation){
@@ -167,7 +167,7 @@ public class ClientPlayer {
 //					}, 10, TimeUnit.MILLISECONDS);
 					uncheckedMovements++;
 					moved = true;
-	//				splats.messenger.sendMessage("1 " + (System.currentTimeMillis() - start - (long)(Gdx.graphics.getDeltaTime()*1000)));//sends when it happened minus delta time. Server uses this info later
+	//				splats.messenger.sendMessage("1 " + (System.currentTimeMillis() - start - (long)(delta*1000)));//sends when it happened minus delta time. Server uses this info later
 				}
 				serverstateright = true;
 			}
@@ -187,10 +187,10 @@ public class ClientPlayer {
 		}
 		
 		if((Gdx.input.isKeyPressed(Input.Keys.A) && !simulation) || (simulation && this.left)){
-			xspeed+=Math.cos(closestangle-1.5708f) * speed*Gdx.graphics.getDeltaTime();
-			yspeed+=Math.sin(closestangle-1.5708f) * speed*Gdx.graphics.getDeltaTime();
+			xspeed+=Math.cos(closestangle-1.5708f) * speed*delta;
+			yspeed+=Math.sin(closestangle-1.5708f) * speed*delta;
 			
-//			xspeed-=speed*Gdx.graphics.getDeltaTime();
+//			xspeed-=speed*delta;
 			if(!simulation){
 				if(!serverstateleft){
 					final long now = System.currentTimeMillis();
@@ -203,7 +203,7 @@ public class ClientPlayer {
 //					}, 10, TimeUnit.MILLISECONDS);
 					uncheckedMovements++;
 					moved = true;
-	//				splats.messenger.sendMessage("-1 " + (System.currentTimeMillis() - start - (long)(Gdx.graphics.getDeltaTime()*1000)));//easily hackable (maybe change?)
+	//				splats.messenger.sendMessage("-1 " + (System.currentTimeMillis() - start - (long)(delta*1000)));//easily hackable (maybe change?)
 				}
 				serverstateleft = true;
 			}
@@ -230,7 +230,7 @@ public class ClientPlayer {
 			if(splats.planets[i] == null){
 				System.out.println("sadsdsadsadadsad " + i);
 			}
-			if(Math.pow(Math.abs(x - splats.planets[i].x), 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2) < Math.pow(size/2 + splats.planets[i].radius, 2)){
+			if(Math.pow(Math.abs(x - splats.planets[i].x), 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2) < Math.pow(getSize()/2 + splats.planets[i].radius, 2)){
 				//collided
 				double angle = Math.atan2((y) - (splats.planets[i].y), (x) - (splats.planets[i].x));
 //				double angle = Math.atan2((splats.planets[i].y) - y, (splats.planets[i].x) - x);
@@ -247,7 +247,7 @@ public class ClientPlayer {
 //				xspeed = -xspeed;
 //				yspeed = -yspeed;
 				
-				System.out.println(Math.toDegrees(angle));
+//				System.out.println(Math.toDegrees(angle));
 				
 //				double u = (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle)) / getDotProduct(Math.cos(angle), Math.sin(angle), Math.cos(angle), Math.sin(angle))) * 
 				double ux = 2 * (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle))) * Math.cos(angle);
@@ -263,8 +263,8 @@ public class ClientPlayer {
 				//set x and y of player to most outer part of circle to make sure it is not detected again
 				double newx = splats.planets[i].x + splats.planets[i].radius * ((x - splats.planets[i].x) / Math.sqrt(Math.pow(x - splats.planets[i].x, 2) + Math.pow(y - splats.planets[i].y, 2)));
 				double newy = splats.planets[i].y + splats.planets[i].radius * ((y - splats.planets[i].y) / Math.sqrt(Math.pow(x - splats.planets[i].x, 2) + Math.pow(y - splats.planets[i].y, 2)));
-				x = (float) (newx + Math.cos(angle) * (size/2+2));
-				y = (float) (newy + Math.sin(angle) * (size/2+2));
+				x = (float) (newx + Math.cos(angle) * (getSize()/2+2));
+				y = (float) (newy + Math.sin(angle) * (getSize()/2+2));
 				
 //				try {
 //					Thread.sleep(1000);
@@ -279,7 +279,7 @@ public class ClientPlayer {
 //					closest = splats.planets[i];
 //					closestdistance = (float) (Math.pow(Math.abs(x - splats.planets[i].x), 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2));
 //				}//TODO MAYBE MAKE THIS LAG A LITTLE LESS SOMEHOW
-			}else if(Math.pow(Math.abs(x - splats.planets[i].x), 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2) < Math.pow(size/2 + (splats.planets[i].radius*3.5f), 2)){
+			}else if(Math.pow(Math.abs(x - splats.planets[i].x), 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2) < Math.pow(getSize()/2 + (splats.planets[i].radius*3.5f), 2)){
 				//close
 				closeplanets.add(splats.planets[i]);
 //				if(closest == null || Math.pow(Math.abs(x - splats.planets[i].x), 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2) < closestdistance){
@@ -303,36 +303,36 @@ public class ClientPlayer {
 			if(planet == closest){
 				closestangle = angle - Math.PI;
 			}                                              //IT WORKS
-			gravityx += Math.cos(angle) * planet.gravity / (Math.sqrt(Math.pow(Math.abs((y) - (planet.y)), 2) + Math.pow(Math.abs((x) - (planet.x)), 2))) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
-			gravityy += Math.sin(angle) * planet.gravity / (Math.sqrt(Math.pow(Math.abs((y) - (planet.y)), 2) + Math.pow(Math.abs((x) - (planet.x)), 2))) * 350;
+			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow(Math.abs((y) - (planet.y)), 2) + Math.pow(Math.abs((x) - (planet.x)), 2))) - getSize()/2 - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
+			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow(Math.abs((y) - (planet.y)), 2) + Math.pow(Math.abs((x) - (planet.x)), 2))) - getSize()/2 -  planet.radius + 300) * 350;
 //			gravityx += Math.cos(angle) * planet.gravity ;//TODO MAKE GRAVITY LESS POWERFULL FOR LOWER MASS PLANETS 
 //			gravityy += Math.sin(angle) * planet.gravity ;
 		}
-		yspeed+=gravityy*Gdx.graphics.getDeltaTime();
-		xspeed+=gravityx*Gdx.graphics.getDeltaTime();
+		yspeed+=gravityy*delta;
+		xspeed+=gravityx*delta;
 		
-		x+=xspeed*Gdx.graphics.getDeltaTime();
+		x+=xspeed*delta;
 		
 //		if(xspeed>maxspeed) xspeed = maxspeed;
 //		if(xspeed<-maxspeed) xspeed = -maxspeed;
-//		if(Math.abs(xspeed)<=friction*Gdx.graphics.getDeltaTime()) xspeed = 0;
-//		if(xspeed<0) xspeed+=friction*Gdx.graphics.getDeltaTime();
-//		if(xspeed>0) xspeed-=friction*Gdx.graphics.getDeltaTime();
+//		if(Math.abs(xspeed)<=friction*delta) xspeed = 0;
+//		if(xspeed<0) xspeed+=friction*delta;
+//		if(xspeed>0) xspeed-=friction*delta;
 		
-		y+=yspeed*Gdx.graphics.getDeltaTime();
+		y+=yspeed*delta;
 		
-		if(Math.abs(xspeed) < friction*Gdx.graphics.getDeltaTime()) xspeed = 0;
-		else if(xspeed>0) xspeed-=friction*Gdx.graphics.getDeltaTime();
-		else if(xspeed<0) xspeed+=friction*Gdx.graphics.getDeltaTime(); //XXX IF YOU CHANGE THIS CHANGE SERVER TOO
-		if(Math.abs(yspeed) < friction*Gdx.graphics.getDeltaTime()) yspeed = 0;
-		else if(yspeed>0) yspeed-=friction*Gdx.graphics.getDeltaTime();
-		else if(yspeed<0) yspeed+=friction*Gdx.graphics.getDeltaTime();
+		if(Math.abs(xspeed) < friction*delta) xspeed = 0;
+		else if(xspeed>0) xspeed-=friction*delta;
+		else if(xspeed<0) xspeed+=friction*delta; //XXX IF YOU CHANGE THIS CHANGE SERVER TOO
+		if(Math.abs(yspeed) < friction*delta) yspeed = 0;
+		else if(yspeed>0) yspeed-=friction*delta;
+		else if(yspeed<0) yspeed+=friction*delta;
 		
 		//update the transformation player
 		if(transformationPlayerPercent != -1 && !simulation){
 			transformationPlayer.left = left;
 			transformationPlayer.right = right;
-			transformationPlayer.update(splats, Gdx.graphics.getDeltaTime(), false);
+			transformationPlayer.update(splats, delta, false);
 		}
 		
 //		splats.cam.position.x = x; 
@@ -343,7 +343,7 @@ public class ClientPlayer {
 			if(transformationPlayerPercent >= 0){
 				x = transformationPlayer.x + (x - transformationPlayer.x) * (transformationPlayerPercent/100f);
 				y = transformationPlayer.y + (y - transformationPlayer.y) * (transformationPlayerPercent/100f);
-				transformationPlayerPercent += 300*Gdx.graphics.getDeltaTime();
+				transformationPlayerPercent += 300*delta;
 				if(transformationPlayerPercent >= 100){
 					transformationPlayerPercent = -1;
 					transformationPlayer = null;
@@ -352,29 +352,29 @@ public class ClientPlayer {
 				}
 			}
 			float lerp = 2.5f;
-			splats.cam.position.x += (((x* splats.batch.scaleFactor) - splats.cam.position.x) * lerp * Gdx.graphics.getDeltaTime()) ;
-			splats.cam.position.y += (((y* splats.batch.scaleFactor) - splats.cam.position.y) * lerp * Gdx.graphics.getDeltaTime()) ;
+			splats.cam.position.x += (((x* splats.batch.scaleFactor) - splats.cam.position.x) * lerp * delta) ;
+			splats.cam.position.y += (((y* splats.batch.scaleFactor) - splats.cam.position.y) * lerp * delta) ;
 //			while(x-size/2<splats.cam.position.x-splats.cam.viewportWidth/2){//TODO FIX THIS NOT WORKING PROPERLY (MOVING LEFT OFF SCREEN
-//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * Gdx.graphics.getDeltaTime();
-//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * Gdx.graphics.getDeltaTime();
+//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * delta;
+//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * delta;
 //	//			splats.cam.position.x =+ x+size/2-splats.cam.viewportWidth/2;
 //				System.out.println("lkajkilad");
 //			}
 //			while(x+size/2>splats.cam.position.x+splats.cam.viewportWidth/2){
-//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * Gdx.graphics.getDeltaTime();
-//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * Gdx.graphics.getDeltaTime();
+//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * delta;
+//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * delta;
 //	//			splats.cam.position.x = x+splats.cam.viewportWidth/2-size/2;
 //				System.out.println("jggfdfggfgf");
 //			}
 //			while(y-size/2<splats.cam.position.y-splats.cam.viewportHeight/2){
-//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * Gdx.graphics.getDeltaTime();
-//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * Gdx.graphics.getDeltaTime();
+//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * delta;
+//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * delta;
 //	//			splats.cam.position.y = y+size/2-splats.cam.viewportHeight/2;
 //				System.out.println("ccvx");
 //			}
 //			while(y+size/2>splats.cam.position.y+splats.cam.viewportHeight/2){
-//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * Gdx.graphics.getDeltaTime();
-//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * Gdx.graphics.getDeltaTime();
+//				splats.cam.position.x += (x - splats.cam.position.x) * lerp * delta;
+//				splats.cam.position.y += (y - splats.cam.position.y) * lerp * delta;
 //	//			splats.cam.position.y = y-splats.cam.viewportHeight/2-size/2;
 //				System.out.println("ti");
 //			}
@@ -385,7 +385,7 @@ public class ClientPlayer {
 //			clickpos.x /= splats.batch.scaleFactor;
 //			clickpos.y *= splats.batch.scaleFactor;
 			final double projectileangle = Math.atan2(clickpos.y-(y*splats.batch.scaleFactor), clickpos.x-(x*splats.batch.scaleFactor));
-			splats.projectiles.add(new Projectile(x, y, splats.projectilesize, projectileangle, 1000));
+			splats.projectiles.add(new Projectile(x + ((getSize() + splats.projectilesize/2) * Math.cos(projectileangle)), y + ((getSize() + splats.projectilesize/2) * Math.sin(projectileangle)), splats.projectilesize, projectileangle, splats.projectileSpeed));
 //			projectiles.add(new Projectile(clientplayer.x, clientplayer.y, projectilesize, Math.atan2((Gdx.graphics.getHeight()-Gdx.input.getY()) - (playerpos) + Gdx.graphics.getHeight()/2), Gdx.input.getX() - (Gdx.graphics.getWidth()/2+clientplayer.x))+clientplayer.rotation+Math.PI/2, 1000));
 //			final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 //			exec.schedule(new Runnable(){
@@ -411,7 +411,7 @@ public class ClientPlayer {
 			if(transformationPlayerPercent >= 0){
 				x = transformationPlayer.x + (x - transformationPlayer.x) * (transformationPlayerPercent/100f);
 				y = transformationPlayer.y + (y - transformationPlayer.y) * (transformationPlayerPercent/100f);
-				transformationPlayerPercent += 300*Gdx.graphics.getDeltaTime();
+				transformationPlayerPercent += 300*delta;
 				if(transformationPlayerPercent >= 100){
 					transformationPlayerPercent = -1;
 					transformationPlayer = null;
@@ -436,8 +436,8 @@ public class ClientPlayer {
 	//		    double angle2 = Math.abs((rotation - closestangle) % (Math.PI*2));
 	//		    double difference = angle1 < angle2 ? -angle1 : angle2;
 				double difference = getDifferenceBetweenAngles(rotation, closestangle);
-	//			splats.cam.rotate((float) -Math.toDegrees((difference * lerp2 * Gdx.graphics.getDeltaTime())));
-				rotation += (difference * lerp2 * Gdx.graphics.getDeltaTime());//THIS WORKS FOR SOME REASON TODO FIND OUT WHY
+	//			splats.cam.rotate((float) -Math.toDegrees((difference * lerp2 * delta)));
+				rotation += (difference * lerp2 * delta);//THIS WORKS FOR SOME REASON TODO FIND OUT WHY
 			}
 	//		rotation = closestangle;
 	//		System.out.println(rotation);
@@ -454,58 +454,6 @@ public class ClientPlayer {
 			uncheckedOldStates.add(oldState);
 		}
 		
-		Position position = new Position(x,y,size/2);
-		for(Player player: splats.players){
-			if(player.collided(position)){
-				//collided with player
-				Player player1 = player;
-				ClientPlayer player2 = this;
-			    //Calculate speeds
-			    float factor = 1;
-	    		float player1xspeed = (2 * (player2.size*factor) * player2.xspeed) / ((size*factor) + player2.size);
-			    float player1yspeed = (2 * (player2.size*factor) * player2.yspeed) / ((size*factor) + player2.size);
-			    float player2xspeed = (2 * (size*factor) * player1.xspeed) / ((size*factor) + player2.size);
-			    float player2yspeed = (2 * (size*factor) * player1.yspeed) / ((size*factor) + player2.size);
-			    
-			    //set speeds (to make sure that when calculating it is using the master copy)
-			    player1.xspeed = player1xspeed;
-			    player1.yspeed = player1yspeed;
-			    player2.xspeed = player2xspeed;
-			    player2.yspeed = player2yspeed;
-			    
-//			    double dist = player.collideDist(position);//from player to position
-			    
-			    float xdist = player1.x - player2.x;
-				float ydist = player1.y - player2.y;
-				double dist = Math.sqrt(Math.pow(xdist, 2) + Math.pow(ydist, 2)); //distance between circles (xdist and ydist and a and b of triangle)
-				
-				double angle = Math.atan2(ydist, xdist);
-				
-				double amountofchange = ((size/2 + player2.size/2) - dist) /2;
-				
-				double newx1 = Math.cos(angle)*amountofchange;
-				double newy1 = Math.sin(angle)*amountofchange;
-
-				double newx2 = Math.cos(angle-Math.PI)*amountofchange;
-				double newy2 = Math.sin(angle-Math.PI)*amountofchange;
-			    
-//			    double radialfactor = (size/2 + player2.size/2) / player.collideDist(position);
-//
-//	    		double singleradialfactor = (radialfactor -1) /2 +1;
-//	    		
-//	    		double factorpervariable = (singleradialfactor - 1) /2 + 1;//halves the resulting variable
-
-	    		player1.x += newx1;
-	    		player1.y += newy1;
-	    		player2.x += newx2;
-	    		player2.y += newy2;
-
-			}
-		}
-	}
-	
-	public double getDotProduct(double x1, double y1, double x2, double y2){
-		return x1 * x2 + y1 * y2;
 	}
 	
 	public double getDifferenceBetweenAngles(double firstAngle, double secondAngle){

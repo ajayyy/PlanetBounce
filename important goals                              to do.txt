@@ -1,0 +1,175 @@
+important goals                              to do
+
+I need to check the actual framerate
+
+and need to fix the weird lag
+
+
+so I could just make the server some how actually part of the client but that might be very hard to do, I could make a git backup of what I have maybe, ok upload to git might be a good idea
+
+Ok, once upload, stash and yea
+
+Ok, once git backup is done then I can copy the server files into the client and just call the update ,ethosds and draw to the screen from those and try that, if that works that'd be cool, because then they'd have the same code base.
+
+Ok if I keep typing I will jee my sp going becayse I need to be ok, it is done now I need to commit and DO OIT
+
+client side colisions to get rid of weird clutter crap, then can save THAT into it's own oldstate, and check on it............. or not, it might be more effective to just check the new location
+
+no copying server or weird thing, just make the mass work, then the glitchy thing (clutter) (client side colisions) . Lag should fix itself. Test out tomorrow. Most bugs probably originate from there anyways so whatever
+
+Ok, now that I think the mass is all good client side colisions, everything is gone, everything grows, and when they start, they start with mass. Just collision is broken, so if client side collisions doesn't fix it then I can simply change the collision code a but. Ok now lets do dis.
+
+
+Ok ok, whats needed is to make player2.render at 499 ClientPLayer.class to have delta too, and colliding to be clientside
+
+So, the main goal is to make colliding done 100% on clientside, and corrections can be solved, just like normal, in the check method. The collisions need to take into consideration mass.
+
+Too start, make what is there work, then work from there
+
+Ok,  that didn't work. Try while and use that to move until. so, move the player, then check if it is still colliding, oh, could they be different sizes, probably not
+
+After than, verify the use of player.time to make sure it is NOT USED WHEN NOT NEEDED!!!!! (might be good but need to double check)
+
+**basically make client side colliding work with multiple sizes and not just client player with player**
+
+Glow not rendering at correct times, make it work just like planet render --- FIXED!!!!!!!
+
+works 100% fine without check, check is all that makes it laggy
+
+get rid of speed change, it's completely redundant
+
+NEXT STEP: RECORD AND SEE HOW FAST DISCREPNCIES HAPPEN WITHOUT CHECK
+
+Things noticed:
+	- is gravity different for clientplayer and player class? -- current task-----ITS ALL GOOD NOW----
+		- how does gravity relate to the bounceheight variable
+		- try to understand how the gravity code *actually* works
+		- turns out smaller planets have more gravity, fix that
+			- FIXED!! Added fix to all classes (clientplayer, player, and server). Still seems like it isnt working though, verify that --------WORKS-----------
+
+
+
+			-----------
+			make gravity still reliant on radius. Radius should scale gravity
+
+			being % away should be the same as being % away from another planet
+
+			maybe write some pseudocode first
+
+			(distance - radius) / radius 
+
+			ADD THIS IN A BUILD, AND PLAY TEST WITH SOMEONE ELSE ASKING WHICH ONE IS BETTER
+
+
+
+
+			New gravity tested and working, but now the change HAS to be implemented but slightly differently (this time smaller planets are going to just have less bounce height (instead of bigger planets having MORE bounce height) )
+
+			Very simple to do, do it
+
+
+			ok, target height of 0.934*radius
+
+
+			475 <-  radius/500*0.42
+			475 <-  0.42
+			0.934*radius <- 
+
+------------------------------------------------
+
+ok, so figure out how to manipulate this linear equation to adjust the percentage, maybe this could be making a linear equation of these numbers (0.42, makes 0.934,  0.43 makes something else) all for same radius
+
+maybe this isnt nessesary though? 
+
+
+seperate ideas below --------------------------
+
+also, are buig planets really nessesary idk
+
+(zoom out based on planet and player size?)
+
+
+
+
+
+you give it a percentage, and it will give you the multiplier for 500 for that percentage. You then get the multiplier for 500 with that formula and see the difference. then calculate it for the right radius and apply the differnce
+
+0.3798
+
+whatever, it's impossible
+
+
+
+
+ 			y = -0.24535124(x - 44) + 475
+
+ 			0 = a(-44)^2 + 475
+ 			-475 = 1936a
+ 			-0.24535124
+
+
+			ok, so .42 of gravity at radius 500 is 475 height (0.934*radius)
+			ok, so .4425 of gravity at radius 600 for 560 height (0.9333333333333*radius)
+			ok, so .4641 of gravity at radius 700 for 653 height (0.934*radius)
+
+			equal enough
+
+0.0225
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			YEA FIGURED OUT A MECHANIC. MAKE IT EASY TO MOVE WITH ARROWS BECAUSE CLICKING USES MASS.
+
+
+
+			done with gravity finally!
+			new gravity system seems to be working perfectly
+
+			now, completely redo collisions
+
+
+
+
+			<--------------------------------->
+			 But for now, collision detection?
+			<--------------------------------->
+
+
+
+					first, the mass/size needs to be changed (mass isn't size, and size isn't mass in the future) (because losing mass from shooting will only lose a bit of mass, and there can also be a score)
+
+					also, client and server have different collision code
+
+
+then, resume work on collision detection
+
+	- collision detection still isn't perfect, could easily be improved --- FIX THIS FIRST ---
+		- it needs to be fixed client side AND sever side (so, start with no check, and figure it out JUST LIKE fixing gravity)
+
+	- hmmm weird bug when using android version (teleportation?)
+
+	ok, even weirder bug when there is a big ball and a small ball, try to find a solution
+
+
+	---------------------------------------------------
+	Then time for making the new planet spawner (not just a boring isometric grid)
+
+
+	__________________________
+	still on gravity: randomly moving to the side slightly (maybe just ignore that? But, COULD BE WHATS CAUSING THE CLIENT GLITCHES)   could be a residue of projectile? (maybe its just its relation to other planets, get back to this AFTER making a new spawning algorithm)
+
+
+
+
+currently in code speed change is disabled.

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Planet {
 	float x,y,radius;
 	
-	float gravity,bounceheight;//set based on radius
+	float gravityhelperconstant,bounceheight;//set based on radius
 	
 	Food[] food = new Food[0]; //all the food
 	
@@ -19,12 +19,41 @@ public class Planet {
 		this.radius = radius;
 //		gravity = -1200000;
 //		gravity = -100000;
-		gravity = -3000;//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+		gravityhelperconstant = -3000;//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
 		
-		double actualgravity = gravity / 50 * 350;
+		double actualgravity = gravityhelperconstant / 300 * 350;//what really controls everything. NOTE: BOUNCEHEIGHT IS NOT GRAVITY, IT IS USED FOR BOUNCING
+		//this is made by itself in the respective classes in a longer form. 350 is the multiplier. 300 is distance from player to planetcenter - radius + 300
 		
-		bounceheight = -(float) (actualgravity * 0.05 );//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+		
+		//bounce height is the equation y = 0.00019941857907 * x + 0.320988385581  (y = mx+b)
+		
+//		bounceheight = -(float) (actualgravity * (0.000175*radius + 0.328));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+		
+		
+		//the currently used form is a parabola, but if on big planets it doesnt seem reasonable it can always be adjusted with if stateemens (if over this radius then use a different formula)
+		
+		if(radius>1500){
+			radius = 1500;
+			//only sets temp variable
+		}
+		bounceheight = -(float) (actualgravity * ((-0.00000020563305192)*Math.pow(radius - 1191.62314342, 2) + 0.51676174503));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+//		bounceheight = -(float) (actualgravity * ((-0.00000056432129312)*Math.pow(radius - 865.537564728, 2) + 0.490178722022));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+
+		//only use this linear one if were small (on reeeally big planets, we dont want 94% bounce rate
+		if(radius<600) bounceheight = -(float) (actualgravity * (0.00019941857907*radius + 0.320988385581));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+		
+		
+		if(radius<400) bounceheight = -(float) (actualgravity * (0.000233139509302*radius + 0.292662804186));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+
+		
+		
+//		bounceheight = -(float) (actualgravity * (0.00019941857907*radius + 0.320988385581)) /2;//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+//		bounceheight = -(float) (actualgravity * (0.0000995142728571*radius + 0.161152864571));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+//		bounceheight = -(float) (actualgravity * (0.5));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+//		bounceheight = -(float) (actualgravity * (0.4104));//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
 		//XXX IF YOU CHANGE THIS THEN MAKE SURE TO CHANGE IT SERVER SIDE TOO
+		
+		//0.42, 0.3897   0.0402   subtract last number from the solution number based on radius        try 0.4023 as a number, should be 0.8 percentage and 600 radius
 
 		
 //		System.out.println(bounceheight);
@@ -43,8 +72,8 @@ public class Planet {
 	}
 	
 	public void renderGlow(Splats splats){
-		Vector3 pos = splats.cam.project(new Vector3(x,y, 0));
-		if(pos.x+radius>0 && pos.x-radius<Gdx.graphics.getWidth() && pos.y+radius>0 && pos.y-radius/2<Gdx.graphics.getHeight()){
+		Vector3 pos = splats.cam.project(new Vector3(x*splats.batch.scaleFactor,y*splats.batch.scaleFactor, 0));
+		if(pos.x+radius>0 && pos.x-radius<Gdx.graphics.getWidth() && pos.y+radius>0 && pos.y-radius<Gdx.graphics.getHeight()){
 			splats.batch.begin();
 			float factor = 1.2f;
 			splats.batch.draw(splats.planetglow, x-radius*(factor), y-radius*(factor), radius*2*(factor), radius*2*(factor));
@@ -58,7 +87,7 @@ public class Planet {
 //			
 //		}
 		Vector3 pos = splats.cam.project(new Vector3(x*splats.batch.scaleFactor,y*splats.batch.scaleFactor, 0));
-		if(pos.x+radius>0 && pos.x-radius<Gdx.graphics.getWidth() && pos.y+radius>0 && pos.y-radius/2<Gdx.graphics.getHeight()){
+		if(pos.x+radius>0 && pos.x-radius<Gdx.graphics.getWidth() && pos.y+radius>0 && pos.y-radius<Gdx.graphics.getHeight()){
 //		if(true){
 			splats.batch.begin();
 			splats.batch.draw(splats.planetimg, x-radius, y-radius, radius*2, radius*2);

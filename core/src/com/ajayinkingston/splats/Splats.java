@@ -3,6 +3,8 @@ package com.ajayinkingston.splats;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.imageio.spi.IIOServiceProvider;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -43,13 +45,14 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	ArrayList<Projectile> projectiles = new ArrayList<>();// TODO: MAKE THEM DESPAWN
 
 	long projectilelast;
-	float projectilesize = 5;
-	float projectileSpeed = 250;
+	int projectilesize = 5;
+	float projectileSpeedChange = 250;
+	float projectileSpeed = 1000;
 
 	int mapsize = 30000;
 
 	public Splats(int device) {// 0 web 1 android 2 iOS 3 desktop
-		this.device = device;
+		this.device = device;//this can be removed because there are built in methods for this. TODO remove this
 	}
 
 	@Override
@@ -81,61 +84,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		clientplayer = new ClientPlayer(this);
 		
-		// planets[0] = new Planet(0, -200, 300);
-
-		// ArrayList<Planet> planetlist = new ArrayList<>();
-		// Planet center = new Planet(0, 0, random.nextInt(300)+200);
-		//
-		// planetlist.add(center);
-		//// planetlist.add(new Planet((int) -center.radius*2, (int)
-		// center.radius*2, random.nextInt(200)+100));
-		// float x = center.x;
-		//// float y = center.y;
-		// float size = center.radius;//TODO SPAWN CENTERS
-		// float bufferdist = 400;
-		// for(float y=center.y;y<mapsize;y+=size*12){
-		// x = center.x;
-		// while(x > -mapsize){
-		// float nsize = random.nextInt(200)+100;
-		// x = -size*6-nsize + x;
-		// // y = size*6-nsize + y;
-		// planetlist.add(new Planet(x,y,nsize));
-		// System.out.println("sdalsadmlkkldsa" + x + " " + mapsize);
-		// }
-		// x = center.x;
-		//// y = center.y;
-		// size = center.radius;
-		// while(x < mapsize){
-		// float nsize = random.nextInt(200)+100;
-		// x = bufferdist*6-nsize + x;
-		// // y = bufferdist*6-nsize + y;
-		// planetlist.add(new Planet(x,y,nsize));
-		// System.out.println("sdalsadmlkkldsa" + x + " " + mapsize);
-		// }
-		// size = center.radius;
-		// x = center.y + bufferdist*3;
-		// float ny = y + bufferdist*6;
-		// while(x > -mapsize){
-		// float nsize = random.nextInt(200)+100;
-		// x = -bufferdist*6-nsize + x;
-		// planetlist.add(new Planet(x,ny,nsize));
-		// System.out.println("sdalsadmlkkldsa" + x + " " + mapsize);
-		// }
-		// size = center.radius;
-		// x = center.y + bufferdist*3;
-		// // y += size*6;
-		// while(x < mapsize){
-		// float nsize = random.nextInt(200)+100;
-		// x = bufferdist*6-nsize + x;
-		// planetlist.add(new Planet(x,ny,nsize));
-		// System.out.println("sdalsadmlkkldsa" + x + " " + mapsize);
-		// }
-		// }
-		//
-		// planets = planetlist.toArray(new Planet[planetlist.size()]);
-		//
 		// arrow = new Arrow(planets[0]);
-		messenger = new WebSocketClientMessenger("67.193.147.175", 2492, device, this);
+		messenger = new WebSocketClientMessenger("ajay.ddns.net", 2492, device, this);
 
 	}
 	
@@ -149,7 +99,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 	@Override
 	public void render() {
-		if (Gdx.graphics.getDeltaTime() > 0.1) {// TODO FIX THIS BECUASE IT WILL CAUSE A LOT OF OF SYNC ISSUES (check keep) (render isn't called while window moving)
+		if (Gdx.graphics.getDeltaTime() > 0.1) {
 			Gdx.graphics.setTitle("UNDER 10 FPS");
 			return;
 		}
@@ -176,27 +126,108 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		for (int i = 0; i < planets.length; i++) {
 			planets[i].renderGlow(this);
 		}
+//		System.out.println(planets[0].radius);
+//		planets[0] = new Planet(0, 0, 25, 2);
+//		for(int i=1;i<planets.length;i++){
+//			planets[i] = new Planet(55555,555555,100, 2);
+//		}
+//		clientplayer.mass = 120;
+//		clientplayer.x = 0;
+//		clientplayer.y = 800;
+//		clientplayer.xspeed = 0;
+//		clientplayer.yspeed = 0;
+//		shapeRenderer.scaleFactor = 0.25f;
+//		batch.scaleFactor = 0.25f;
+//		System.out.println(((Math.sqrt(Math.pow(Math.abs((clientplayer.y) - (planets[0].y)), 2) + Math.pow(Math.abs((clientplayer.x) - (planets[0].x)), 2))) - clientplayer.size/2 - planets[0].radius) / planets[0].radius);
+//		players.get(0).x = 0;
+//		players.get(0).y = 600;
+//		players.get(0).yspeed = 0;
+//		players.get(0).xspeed = 0;
 
-		clientplayer.render(this, false);
+		
+		
+		clientplayer.render(this);
 
 		for (Player player : new ArrayList<Player>(players)) {
-			player.update(this, Gdx.graphics.getDeltaTime(), false);
-			player.render(this);
+			player.render(this, Gdx.graphics.getDeltaTime());
 		}
 
 		for (int i = 0; i < planets.length; i++) {
 			planets[i].render(this);
 		}
-
+		
 		for (Projectile projectile : new ArrayList<>(projectiles)) {
 			projectile.render(this, shapeRenderer);
-			if(projectile.distance > 500){
+			if(System.currentTimeMillis() - projectile.start > 4500 || isTouchingPlanet(projectile, getClosestPlanet(projectile))){
 				projectiles.remove(projectile);
 			}
 		}
-
+		
+		clientplayer.update(this, Gdx.graphics.getDeltaTime(), false);
+		
+		for (Player player : new ArrayList<Player>(players)) {
+			player.update(this, Gdx.graphics.getDeltaTime(), false);
+		}
+		
+		//collision detection
+		Position position = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
+		for(Player player2: players){//for clientplayer to player
+			if(player2.collided(position)){
+				//collided with player
+				affectColidedPlayers(clientplayer, player2);
+			}
+		}
+		for(int i=0;i<players.size();i++){//for player to player
+			Position player1 = new Position(players.get(i).x, players.get(i).y, players.get(i).getRadius());
+			for(int s=i+1;s<players.size();s++){
+				if(players.get(s).collided(player1)){
+					//collided with player
+					affectColidedPlayers(players.get(i),players.get(s));
+				}
+			}
+		}
+		
+		//projectile collision detection
+		Position clientplayerposition = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
+		for(Projectile projectile: new ArrayList<>(projectiles)){
+			for(Player player: players){
+				Position projectile1 = new Position(projectile.x,projectile.y,projectile.radius);
+				if(player.collided(projectile1)){
+					affectColidedPlayers(player, projectile);
+				}
+			}
+			if(projectile.collided(position)){
+				//collided with player
+				affectColidedPlayers(clientplayer, projectile);
+			}
+		}
+		
 		// arrow.render(this);
 
+	}
+	
+	public void affectColidedPlayers(Entity player1, Entity player2){//once the players are collided, this function will deal with them
+	    //Calculate speeds
+//	    float player1xspeed = (player1.xspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player2.xspeed)) / (clientplayer.startmass +clientplayer.startmass);
+//	    float player1yspeed = (player1.yspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player2.yspeed)) / (clientplayer.startmass + clientplayer.startmass);
+//	    float player2xspeed = (player2.xspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player1.xspeed)) / (clientplayer.startmass + clientplayer.startmass);  ////https://gamedevelopment.tutsplus.com/tutorials/when-worlds-collide-simulating-circle-circle-collisions--gamedev-769
+//	    float player2yspeed = (player2.yspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player1.yspeed)) / (clientplayer.startmass + clientplayer.startmass);
+	    
+	    float player1xspeed = player2.xspeed;
+	    float player1yspeed = player2.yspeed;
+	    float player2xspeed = player1.xspeed;  //https://gamedevelopment.tutsplus.com/tutorials/when-worlds-collide-simulating-circle-circle-collisions--gamedev-769
+	    float player2yspeed = player1.yspeed;
+	    
+	    //set speeds (to make sure that when calculating it is using the master copy)
+	    player1.xspeed = player1xspeed;
+	    player1.yspeed = player1yspeed;
+	    player2.xspeed = player2xspeed;
+	    player2.yspeed = player2yspeed;
+	    
+	    player1.x += player1xspeed * Gdx.graphics.getDeltaTime();
+	    player1.y += player1yspeed * Gdx.graphics.getDeltaTime();
+	    player2.x += player2xspeed * Gdx.graphics.getDeltaTime();
+	    player2.y += player2yspeed * Gdx.graphics.getDeltaTime();
 	}
 
 	@Override
@@ -214,7 +245,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		System.out.println("Player doesn't exist when getting player");
 		return null;
 	}
-
+	
 	@Override
 	public void onMessageRecieved(String message) {
 		if (message.startsWith("CONNECTED")) {
@@ -248,10 +279,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 			if(id == messenger.getId()){
 				if(clientplayer.massChangeAni){
-					clientplayer.size = clientplayer.aniStartMass + clientplayer.aniMassChange;
+					clientplayer.mass = clientplayer.aniStartMass + clientplayer.aniMassChange;
 				}
 				clientplayer.aniMassChange = (int) (Integer.parseInt(message.split(" ")[2]) );
-				clientplayer.aniStartMass = clientplayer.size;
+				clientplayer.aniStartMass = clientplayer.mass;
 				clientplayer.massChangeAni = true;
 				clientplayer.aniMass = 0;
 			}else{
@@ -269,7 +300,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			}
 			
 		}else if (message.startsWith("SPEEDCHANGE")) {
-//			if(true) return;
+			if(true) return;
 			int id = Integer.parseInt(message.split(" ")[1]);
 			float xspeed = Float.parseFloat(message.split(" ")[2]);
 			float yspeed = Float.parseFloat(message.split(" ")[3]);
@@ -278,7 +309,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			if(id == messenger.getId()){
 				
 				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
-				OldState originalState = getOldStateAtTime(oldStates, time, new Player(-1, -1, clientplayer.size, this));
+				OldState originalState = getOldStateAtTime(oldStates, time, new Player(-1, -1, clientplayer.mass, this));
 				int originalStateIndex = oldStates.indexOf(originalState);
 				if (originalStateIndex == -1)
 					originalStateIndex = 0;
@@ -295,14 +326,14 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 				// make now like that old state
 				if(clientplayer.transformationPlayer != null && clientplayer.transformationPlayerPercent < 100 && clientplayer.transformationPlayerPercent >= 0){
-					Player newTransformationPlayer = new Player(-1, -1, clientplayer.size, this);
+					Player newTransformationPlayer = new Player(-1, -1, clientplayer.mass, this);
 					newTransformationPlayer.x = clientplayer.transformationPlayer.x + (clientplayer.x - clientplayer.transformationPlayer.x) * (clientplayer.transformationPlayerPercent/100);
 					newTransformationPlayer.y = clientplayer.transformationPlayer.y + (clientplayer.y - clientplayer.transformationPlayer.y) * (clientplayer.transformationPlayerPercent/100);
 					newTransformationPlayer.xspeed = xspeed;
 					newTransformationPlayer.yspeed = yspeed;
 					clientplayer.transformationPlayer = newTransformationPlayer;
 				}else{
-					clientplayer.transformationPlayer = new Player(-1, -1, clientplayer.size, this);
+					clientplayer.transformationPlayer = new Player(-1, -1, clientplayer.mass, this);
 					clientplayer.transformationPlayer.x = clientplayer.x;
 					clientplayer.transformationPlayer.y = clientplayer.y;
 					clientplayer.transformationPlayer.xspeed = xspeed;
@@ -321,12 +352,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 					clientplayer.left = oldOldStates.get(i).left;
 					clientplayer.right = oldOldStates.get(i).right;
 					if(oldOldStates.get(i).shot){
-						clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeed);
-						clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeed);
+						clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+						clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 					}
 
 					double delta = timeDifference / amountremoved;
-					clientplayer.render(this, true);
+					clientplayer.update(this, Gdx.graphics.getDeltaTime(), true);
 				}
 				
 			}else{
@@ -376,8 +407,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 					player.left = oldOldStates.get(i).left;
 					player.right = oldOldStates.get(i).right;
 					if(oldOldStates.get(i).shot){
-						player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeed);
-						player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeed);
+						player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+						player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 					}
 
 					double delta = 1/60;
@@ -401,12 +432,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 			if (id == messenger.getId()) {
 //				if(true) return;
-				if(clientplayer.uncheckedMovements>0) return; //if the server doesn't know everything, don't trust it
+//				if(clientplayer.uncheckedMovements>0) return; //if the server doesn't know everything, don't trust it
 
 				// do it for clientplayer
 
 				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
-				OldState originalState = getOldStateAtTime(oldStates, time, new Player(-1, -1, clientplayer.size, this));
+				OldState originalState = getOldStateAtTime(oldStates, time, new Player(-1, -1, clientplayer.mass, this));
 				int originalStateIndex = oldStates.indexOf(originalState);
 				if (originalStateIndex == -1)
 					originalStateIndex = 0;
@@ -427,6 +458,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false);
 				if(isStateInBetween(currentState, beforeState, originalState) && isStateInBetween(currentState, originalState, afterState) &&
 						isStateInBetween(currentState, beforeState, afterState)){
+//				if(true){  so, I was resring on the 14th of July 2017, and it seemed like the above if statement was useless. The again, there is little lag when testing on the same ccomputer, maybe try testing this with a vpn and a browser based version of the game
 					// reset as if we were there (like server)
 					double timeDifference = (System.currentTimeMillis() - clientplayer.start - time) / 1000d;// difference between now, and when it was pressed
 
@@ -439,14 +471,14 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 					// make now like that old state
 					if(clientplayer.transformationPlayer != null && clientplayer.transformationPlayerPercent < 100 && clientplayer.transformationPlayerPercent >= 0){
-						Player newTransformationPlayer = new Player(-1, -1, clientplayer.size, this);
+						Player newTransformationPlayer = new Player(-1, -1, clientplayer.mass, this);
 						newTransformationPlayer.x = clientplayer.transformationPlayer.x + (clientplayer.x - clientplayer.transformationPlayer.x) * (clientplayer.transformationPlayerPercent/100);
 						newTransformationPlayer.y = clientplayer.transformationPlayer.y + (clientplayer.y - clientplayer.transformationPlayer.y) * (clientplayer.transformationPlayerPercent/100);
 						newTransformationPlayer.xspeed = xspeed;
 						newTransformationPlayer.yspeed = yspeed;
 						clientplayer.transformationPlayer = newTransformationPlayer;
 					}else{
-						clientplayer.transformationPlayer = new Player(-1, -1, clientplayer.size, this);
+						clientplayer.transformationPlayer = new Player(-1, -1, clientplayer.mass, this);
 						clientplayer.transformationPlayer.x = clientplayer.x;
 						clientplayer.transformationPlayer.y = clientplayer.y;
 						clientplayer.transformationPlayer.xspeed = xspeed;
@@ -465,12 +497,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 						clientplayer.left = oldOldStates.get(i).left;
 						clientplayer.right = oldOldStates.get(i).right;
 						if(oldOldStates.get(i).shot){
-							clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeed);
-							clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeed);
+							clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+							clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 						}
 
 						double delta = timeDifference / amountremoved;
-						clientplayer.render(this, true);
+						clientplayer.update(this, Gdx.graphics.getDeltaTime(), true);
 					}
 				}
 
@@ -539,8 +571,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 						player.left = oldOldStates.get(i).left;
 						player.right = oldOldStates.get(i).right;
 						if(oldOldStates.get(i).shot){
-							player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeed);
-							player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeed);
+							player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+							player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 						}
 
 						double delta = 1/60;
@@ -603,8 +635,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				player.left = oldOldStates.get(i).left;
 				player.right = oldOldStates.get(i).right;
 				if(oldOldStates.get(i).shot){
-					player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeed);
-					player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeed);
+					player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+					player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 				}
 				
 				double delta = 1/60;
@@ -687,8 +719,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 					player.right = oldOldStates.get(i).right;
 				}
 				if(oldOldStates.get(i).shot){
-					player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeed);
-					player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeed);
+					player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+					player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 				}
 				
 				double delta = 1/60;
@@ -756,13 +788,13 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		return smallestOldState;
 	}
 
-	public Planet getClosestPlanet(Player player) {
+	public Planet getClosestPlanet(Entity player) {
 		ArrayList<Planet> closestplanets = getClosestPlanets(player);
 		// System.out.println("yioeuioruiouoetiuewiourio"+(closestplanets.get(0)==null));
 		return closestplanets.get(0);
 	}
 
-	public ArrayList<Planet> getClosestPlanets(Player player) {
+	public ArrayList<Planet> getClosestPlanets(Entity player) {
 		ArrayList<Planet> closeplanets = new ArrayList<>();
 		Planet closest = null;
 		float closestdistance = 0;
@@ -801,8 +833,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			// splats.planets[i].x), 2) + Math.pow(Math.abs(y -
 			// splats.planets[i].y), 2));
 			// }
-			if (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < Math
-					.pow(clientplayer.size / 2 + (planets[i].radius * 3.5f), 2)) {
+			if (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < Math.pow(player.getSize() / 2 + (planets[i].radius * 3.5f), 2)) {
 				// close
 				closeplanets.add(planets[i]);
 				if (closest == null || Math.pow(Math.abs(player.x - planets[i].x), 2)
@@ -837,9 +868,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		return closestangle;
 	}
 
-	public boolean isTouchingPlanet(Player player, Planet planet) {
-		return Math.pow(Math.abs(player.x - planet.x), 2) + Math.pow(Math.abs(player.y - planet.y), 2) < Math
-				.pow(clientplayer.size / 2 + planet.radius, 2);
+	public boolean isTouchingPlanet(Entity player, Planet planet) {
+		return Math.pow(Math.abs(player.x - planet.x), 2) + Math.pow(Math.abs(player.y - planet.y), 2) < Math.pow(player.getSize() / 2 + planet.radius, 2);
 	}
 
 	public double getAngleFromPlanet(Player player, Planet planet) {

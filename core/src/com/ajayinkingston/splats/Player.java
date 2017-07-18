@@ -6,14 +6,11 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 
-public class Player {
+public class Player extends Entity{
 	public static Random rand = new Random();
 	
-	int id;
 	boolean real;//actually a player
 	
-	float x,y;
-	float xspeed,yspeed;
 	boolean left,right;//now going to be used
 	boolean shooting;//this frame will be cleared next frame
 	double projectileAngle = 0;
@@ -25,16 +22,20 @@ public class Player {
 	Player transformationPlayer;
 	float transformationPlayerPercent = -1;
 	
-	int mass;
 	boolean massChangeAni;
 	int aniMass;
 	
 	int image;
 	
 	public Player(int id, long start, int mass, Splats splats) {//TODO MAKE THIS CONSTRUCTOR ASK FOR X AND Y TOO (JUST LIKE SERVER)
+		this(id, start, 0, 800, mass, splats);
+	}
+	
+	public Player(int id, long start, int x, int y, int mass, Splats splats) {//TODO MAKE THIS CONSTRUCTOR ASK FOR X AND Y TOO (JUST LIKE SERVER)
 		this.id = id;
 		this.mass = mass;
-		y = 800;
+		this.x = x;
+		this.y = y;
 		
 		this.start = start;
 		if(id!=-1) real = true;
@@ -50,8 +51,8 @@ public class Player {
 //			System.out.println((this == null) + " " + (planet == null));
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
 			
-			gravityx += Math.cos(angle) * planet.gravity / (Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
-			gravityy += Math.sin(angle) * planet.gravity / (Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) * 350;
+			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getSize()/2 - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
+			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getSize()/2 - planet.radius + 300) * 350;
 		}
 		xspeed += gravityx * delta;
 		yspeed += gravityy * delta;
@@ -66,10 +67,10 @@ public class Player {
 		}
 		
 		if(shooting){
-			xspeed -= Math.cos(projectileAngle) * splats.projectileSpeed;
-			yspeed -= Math.sin(projectileAngle) * splats.projectileSpeed;
+			xspeed -= Math.cos(projectileAngle) * splats.projectileSpeedChange;
+			yspeed -= Math.sin(projectileAngle) * splats.projectileSpeedChange;
 			if(real){
-				splats.projectiles.add(new Projectile(x, y, splats.projectilesize, projectileAngle, 1000));
+				splats.projectiles.add(new Projectile(x + ((getRadius() + 1 + splats.projectilesize/2) * Math.cos(projectileAngle)), y + ((getRadius() + splats.projectilesize/2) * Math.sin(projectileAngle)), splats.projectilesize, projectileAngle, splats.projectileSpeed));
 				if(transformationPlayerPercent != -1){
 					transformationPlayer.shooting = true;
 					transformationPlayer.projectileAngle = projectileAngle;
@@ -95,16 +96,16 @@ public class Player {
 			
 			double newx = planet.x + planet.radius * ((x - planet.x) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
 			double newy = planet.y + planet.radius * ((y - planet.y) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
-			x = (float) (newx + Math.cos(angle) * (mass/2+2));
-			y = (float) (newy + Math.sin(angle) * (mass/2+2));
+			x = (float) (newx + Math.cos(angle) * (getSize()/2+2));
+			y = (float) (newy + Math.sin(angle) * (getSize()/2+2));
 		}
 		
-		if(Math.abs(xspeed) < splats.clientplayer.friction*delta) xspeed = 0;
-		else if(xspeed>0) xspeed-=splats.clientplayer.friction*delta;
-		else if(xspeed<0) xspeed+=splats.clientplayer.friction*delta;
-		if(Math.abs(yspeed) < splats.clientplayer.friction*delta) yspeed = 0;
-		else if(yspeed>0) yspeed-=splats.clientplayer.friction*delta;
-		else if(yspeed<0) yspeed+=splats.clientplayer.friction*delta;
+		if(Math.abs(xspeed) < friction*delta) xspeed = 0;
+		else if(xspeed>0) xspeed-=friction*delta;
+		else if(xspeed<0) xspeed+=friction*delta;
+		if(Math.abs(yspeed) < friction*delta) yspeed = 0;
+		else if(yspeed>0) yspeed-=friction*delta;
+		else if(yspeed<0) yspeed+=friction*delta;
 		
 		x += xspeed * delta;
 		y += yspeed * delta;
@@ -126,13 +127,13 @@ public class Player {
 		}
 	}
 	
-	public void render(Splats splats){
+	public void render(Splats splats, double delta){
 		float x = this.x;
 		float y = this.y;
 		if(transformationPlayerPercent >= 0){
 			x = transformationPlayer.x + ((x - transformationPlayer.x) * (transformationPlayerPercent/100f));
 			y = transformationPlayer.y + ((y - transformationPlayer.y) * (transformationPlayerPercent/100f));
-			transformationPlayerPercent += 200*Gdx.graphics.getDeltaTime();
+			transformationPlayerPercent += 200*delta;
 			if(transformationPlayerPercent >= 100){
 				transformationPlayerPercent = -1;
 				transformationPlayer = null;
@@ -159,25 +160,9 @@ public class Player {
 		
 		splats.batch.begin();
 		float factor = 1.4f;
-		splats.batch.draw(splats.shadow, x-mass/2*factor, y-mass/2*factor, mass*factor, mass*factor);
-		splats.batch.draw(splats.playerImages[image], x-mass/2, y-mass/2, mass, mass);
+		splats.batch.draw(splats.shadow, x-getSize()/2*factor, y-getSize()/2*factor, getSize()*factor, getSize()*factor);
+		splats.batch.draw(splats.playerImages[image], x-getSize()/2, y-getSize()/2, getSize(), getSize());
 		splats.batch.end();
 	}
 	
-	public boolean collided(Position player){
-		return collideDist(player) < player.radius + player.radius;
-	}
-	
-	public double collideDist(Position player){
-		float xdist = x - player.x;
-		float ydist = y - player.y;
-		double dist = Math.sqrt(Math.pow(xdist, 2) + Math.pow(ydist, 2)); //distance between circles (xdist and ydist and a and b of triangle)
-	
-		return dist;
-	}
-	
-	//util methods
-	public double getDotProduct(double x1, double y1, double x2, double y2){
-		return x1 * x2 + y1 * y2;
-	}
 }

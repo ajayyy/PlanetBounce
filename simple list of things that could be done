@@ -1,0 +1,45 @@
+Simple list of things that could be done: brainstorm
+
+Completed ✔
+- making sure this collision system is realistic
+	- any issues are just caused by check
+- make projectiles move other players
+
+CURRENT TASK: ...
+
+	- fix transformationplayer (it is COMPLETELY non functional)
+
+	figure out what the heck is up with it anyway
+
+	or, just redo it entirely, make it more effecient and clear (good code)
+
+
+TODO: 
+
+- why wont tunnel bear connect?
+- fix that the projectiles spawn just a bit outside the players
+- fix improper disconnection (have some way of checking if the player is really connected)
+- adding death feature
+- check whats up with check, is it really using the method to make sure that teleportations are smooth
+	- maybe redo check?
+- make check have more leaniency to if something is good, and doesnt need reseting (to prevent so much checking)
+- reconnect upon disconnect
+	- give uuid to everyone to make sure they can stay connected
+	- this is nessesary because of dynamic ip
+- save delta in oldstates (so its not always using 1/60)
+- make scoreboard
+- make arrows (player/planet incoming)
+- make sound effects
+- revamp graphics
+- fix weird android teleportation bug/test if it's still there
+- make new planet spawner
+- make food be picked up client side, and then checks with server (this could be client asking the server, or the client waiting a bit for the server to respond)
+- redo sending to make it not send strings and be more effecient
+- only send client the players and planets it needs to deal with (any others can be sent on demand)
+- make clicking use up your mass
+- make one scoreboard with total score, which includes the mass when you lose it
+- add grid/stars/something so you know that you are moving
+- upgrade system, similar to diep.io (actually check that site and see how it is)
+	- upgrades like, homing missile, bullets pass through player, no gravity
+	- bulltes cost mass? only work for certain amount of projectiles
+- mobile control system
