@@ -2,6 +2,7 @@ package com.ajayinkingston.bouncee.client;
 
 import com.ajayinkingston.splats.Splats;
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 import com.google.gwt.dom.client.Document;
@@ -84,6 +85,9 @@ public class HtmlLauncher extends GwtApplication {
 
         	canvas.getStyle().setWidth(getWindowInnerWidth(), Style.Unit.PX);
             canvas.getStyle().setHeight(getWindowInnerHeight(), Style.Unit.PX);
+            
+            Gdx.graphics.setWindowedMode(getWindowInnerWidth(),getWindowInnerHeight());
+            Gdx.gl.glViewport(0, 0, getWindowInnerWidth(), getWindowInnerHeight());
             
             splats.resize(getWindowInnerWidth(), getWindowInnerHeight());
         }

@@ -1,0 +1,73 @@
+//				if(true) return;
+				if(clientplayer.uncheckedMovements>0) return; //if the server doesn't know everything, don't trust it
+
+				// do it for clientplayer
+
+				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
+				OldState originalState = getOldStateAtFrame(oldStates, frame, new Player(-1, clientplayer.mass, this));
+				int originalStateIndex = oldStates.indexOf(originalState);
+				if (originalStateIndex == -1)
+					originalStateIndex = 0;
+				OldState beforeState = originalState;
+				if (originalStateIndex > 0)
+					beforeState = oldStates.get(originalStateIndex - 1);
+				OldState afterState = originalState;
+				if (originalStateIndex < oldStates.size() - 1)
+					afterState = oldStates.get(originalStateIndex + 1);
+				
+
+				// int smallerx
+				// if(smallerstate.x)
+
+//				if (!isInBetween(x, beforeState.x, afterState.x) || !isInBetween(y, beforeState.y, afterState.y)
+//						|| !isInBetween(xspeed, beforeState.xspeed, afterState.xspeed)
+//						|| !isInBetween(yspeed, beforeState.yspeed, afterState.yspeed)) {
+				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false);
+				if(isStateInBetween(currentState, beforeState, originalState) && isStateInBetween(currentState, originalState, afterState) &&
+						isStateInBetween(currentState, beforeState, afterState)){
+//				if(true){  so, I was testing on the 14th of July 2017, and it seemed like the above if statement was useless. The again, there is little lag when testing on the same ccomputer, maybe try testing this with a vpn and a browser based version of the game
+					// reset as if we were there (like server)
+
+					int amountremoved = oldStates.size() - (originalStateIndex + 1);
+					ArrayList<OldState> oldOldStates = new ArrayList<>();
+					for (int i = 0; i < amountremoved; i++) {// remove all of the future ones
+						oldOldStates.add(oldStates.get(originalStateIndex));
+						oldStates.remove(originalStateIndex);
+					}
+
+					// make now like that old state
+					if(clientplayer.transformationPlayer != null && clientplayer.transformationPlayerPercent < 100 && clientplayer.transformationPlayerPercent >= 0){
+						Player newTransformationPlayer = new Player(-1, clientplayer.mass, this);
+						newTransformationPlayer.x = clientplayer.transformationPlayer.x + (clientplayer.x - clientplayer.transformationPlayer.x) * (clientplayer.transformationPlayerPercent/100);
+						newTransformationPlayer.y = clientplayer.transformationPlayer.y + (clientplayer.y - clientplayer.transformationPlayer.y) * (clientplayer.transformationPlayerPercent/100);
+						newTransformationPlayer.xspeed = xspeed;
+						newTransformationPlayer.yspeed = yspeed;
+						clientplayer.transformationPlayer = newTransformationPlayer;
+					}else{
+						clientplayer.transformationPlayer = new Player(-1, clientplayer.mass, this);
+						clientplayer.transformationPlayer.x = clientplayer.x;
+						clientplayer.transformationPlayer.y = clientplayer.y;
+						clientplayer.transformationPlayer.xspeed = xspeed;
+						clientplayer.transformationPlayer.yspeed = yspeed;
+					}
+					clientplayer.transformationPlayerPercent = 0;
+					clientplayer.transformationPlayer.left = clientplayer.left;
+					clientplayer.transformationPlayer.right = clientplayer.right;
+					clientplayer.x = x;
+					clientplayer.y = y;
+					clientplayer.xspeed = xspeed;
+					clientplayer.yspeed = yspeed;
+
+					clientplayer.oldStates = oldStates;
+					for (int i = 0; i < amountremoved; i++) {// remove all of the future ones
+						clientplayer.left = oldOldStates.get(i).left;
+						clientplayer.right = oldOldStates.get(i).right;
+						if(oldOldStates.get(i).shot){
+							clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+							clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+						}
+
+						double delta = timeDifference / amountremoved;
+						clientplayer.update(this, Gdx.graphics.getDeltaTime(), true);
+					}
+				}

@@ -4,6 +4,8 @@ Completed ✔
 - making sure this collision system is realistic
 	- any issues are just caused by check
 - make projectiles move other players
+- add player.start back into the mix
+- switching to frame count instead of player.start
 
 CURRENT TASK: ...
 
@@ -16,7 +18,6 @@ CURRENT TASK: ...
 
 TODO: 
 
-- why wont tunnel bear connect?
 - fix that the projectiles spawn just a bit outside the players
 - fix improper disconnection (have some way of checking if the player is really connected)
 - adding death feature

@@ -56,9 +56,9 @@ public class WebSocketClientMessenger
 //		}
 	}
 	
-	public void onConnect(long difference)
+	public void onConnect(long time)
 	{
-		receiver.onConnect(difference);
+		receiver.onConnect(time);
 	}
 
 

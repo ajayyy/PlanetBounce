@@ -15,7 +15,7 @@ public class Player extends Entity{
 	boolean shooting;//this frame will be cleared next frame
 	double projectileAngle = 0;
 	
-	long start;//current time millis of since connected
+	long frames = 0;//amount of frames that passed;
 	
 	ArrayList<OldState> oldStates = new ArrayList<>();
 	
@@ -27,58 +27,36 @@ public class Player extends Entity{
 	
 	int image;
 	
-	public Player(int id, long start, int mass, Splats splats) {//TODO MAKE THIS CONSTRUCTOR ASK FOR X AND Y TOO (JUST LIKE SERVER)
-		this(id, start, 0, 800, mass, splats);
+	public Player(int id, int mass, Splats splats) {//TODO MAKE THIS CONSTRUCTOR ASK FOR X AND Y TOO (JUST LIKE SERVER)
+		this(id, 0, 800, mass, splats);
 	}
 	
-	public Player(int id, long start, int x, int y, int mass, Splats splats) {//TODO MAKE THIS CONSTRUCTOR ASK FOR X AND Y TOO (JUST LIKE SERVER)
+	public Player(int id, int x, int y, int mass, Splats splats) {//TODO MAKE THIS CONSTRUCTOR ASK FOR X AND Y TOO (JUST LIKE SERVER)
 		this.id = id;
 		this.mass = mass;
 		this.x = x;
 		this.y = y;
 		
-		this.start = start;
 		if(id!=-1) real = true;
 		
 		image = rand.nextInt(splats.playerImages.length);
 	}
 	
 	public void update(Splats splats, double delta, boolean simulation){
+		
+		//gravity
 		ArrayList<Planet> closestplanets = splats.getClosestPlanets(this);
 		float gravityx = 0;
 		float gravityy = 0;
-		for(Planet planet:closestplanets){
-//			System.out.println((this == null) + " " + (planet == null));
+		for(Planet planet: closestplanets){
+//			System.out.println((player == null) + " " + (planet == null));
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
 			
-			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getSize()/2 - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
-			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getSize()/2 - planet.radius + 300) * 350;
-		}
-		xspeed += gravityx * delta;
-		yspeed += gravityy * delta;
-		
-		if(right){
-			xspeed += Math.cos(splats.getClosestAngle(this)+Math.toRadians(90)) * splats.clientplayer.speed * delta;
-			yspeed += Math.sin(splats.getClosestAngle(this)+Math.toRadians(90)) * splats.clientplayer.speed * delta;
-		}
-		if(left){
-			xspeed += Math.cos(splats.getClosestAngle(this)+Math.toRadians(-90)) * splats.clientplayer.speed * delta;
-			yspeed += Math.sin(splats.getClosestAngle(this)+Math.toRadians(-90)) * splats.clientplayer.speed * delta;
+			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
+			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
 		}
 		
-		if(shooting){
-			xspeed -= Math.cos(projectileAngle) * splats.projectileSpeedChange;
-			yspeed -= Math.sin(projectileAngle) * splats.projectileSpeedChange;
-			if(real){
-				splats.projectiles.add(new Projectile(x + ((getRadius() + 1 + splats.projectilesize/2) * Math.cos(projectileAngle)), y + ((getRadius() + splats.projectilesize/2) * Math.sin(projectileAngle)), splats.projectilesize, projectileAngle, splats.projectileSpeed));
-				if(transformationPlayerPercent != -1){
-					transformationPlayer.shooting = true;
-					transformationPlayer.projectileAngle = projectileAngle;
-				}
-			}
-			shooting = false;
-		}
-		
+		//bouncing
 		Planet planet = splats.getClosestPlanet(this);
 		if(splats.isTouchingPlanet(this, planet)){
 			System.out.println("COLLIDING");
@@ -96,10 +74,25 @@ public class Player extends Entity{
 			
 			double newx = planet.x + planet.radius * ((x - planet.x) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
 			double newy = planet.y + planet.radius * ((y - planet.y) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
-			x = (float) (newx + Math.cos(angle) * (getSize()/2+2));
-			y = (float) (newy + Math.sin(angle) * (getSize()/2+2));
+			x = (float) (newx + Math.cos(angle) * (getRadius()+2));
+			y = (float) (newy + Math.sin(angle) * (getRadius()+2));
 		}
 		
+		//add gravity speeds to speed
+		xspeed += gravityx * delta;
+		yspeed += gravityy * delta;
+		
+		//movement
+		if(right){
+			xspeed += Math.cos(splats.getClosestAngle(this)+Math.toRadians(90)) * splats.clientplayer.speed * delta;
+			yspeed += Math.sin(splats.getClosestAngle(this)+Math.toRadians(90)) * splats.clientplayer.speed * delta;
+		}
+		if(left){
+			xspeed += Math.cos(splats.getClosestAngle(this)+Math.toRadians(-90)) * splats.clientplayer.speed * delta;
+			yspeed += Math.sin(splats.getClosestAngle(this)+Math.toRadians(-90)) * splats.clientplayer.speed * delta;
+		}
+		
+		//friction
 		if(Math.abs(xspeed) < friction*delta) xspeed = 0;
 		else if(xspeed>0) xspeed-=friction*delta;
 		else if(xspeed<0) xspeed+=friction*delta;
@@ -107,8 +100,23 @@ public class Player extends Entity{
 		else if(yspeed>0) yspeed-=friction*delta;
 		else if(yspeed<0) yspeed+=friction*delta;
 		
+		//add all speeds
 		x += xspeed * delta;
 		y += yspeed * delta;
+		
+		//shooting
+		if(shooting){
+			xspeed -= Math.cos(projectileAngle) * splats.projectileSpeedChange;
+			yspeed -= Math.sin(projectileAngle) * splats.projectileSpeedChange;
+			if(real){
+				splats.projectiles.add(new Projectile(x + ((getRadius() + 1 + splats.projectilesize/2) * Math.cos(projectileAngle)), y + ((getRadius() + splats.projectilesize/2) * Math.sin(projectileAngle)), splats.projectilesize, projectileAngle, splats.projectileSpeed));
+				if(transformationPlayerPercent != -1){
+					transformationPlayer.shooting = true;
+					transformationPlayer.projectileAngle = projectileAngle;
+				}
+			}
+			shooting = false;
+		}
 		
 		if(transformationPlayerPercent != -1 && real && !simulation){
 			transformationPlayer.left = left;
@@ -119,12 +127,13 @@ public class Player extends Entity{
 //		System.out.println(xspeed + " " + yspeed);
 		
 		if(real){
-			OldState oldState = new OldState(x, y, xspeed, yspeed, System.currentTimeMillis(), left, right);
+			OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right);
 			oldStates.add(oldState);
 			while(oldStates.size() > 90){//1.5 seconds of old state data
 				oldStates.remove(0);
 			}
 		}
+		frames++;
 	}
 	
 	public void render(Splats splats, double delta){

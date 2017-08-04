@@ -67,7 +67,7 @@ public class WSClient implements ComClient
 					else if (message.startsWith("MSG_SEND_ID"))
 					{
 						long ping = System.currentTimeMillis() - startTime;
-						c.onConnect(ping/2);
+						c.onConnect(System.currentTimeMillis() - ping/2);
 						
 						String [] values = message.split("\\s+"); //splitter with the " " separator
 						myID = Integer.valueOf(values[1]);	
@@ -96,7 +96,7 @@ public class WSClient implements ComClient
 
 	private void requestID()
 	{
-		startTime = System.nanoTime();
+		startTime = System.currentTimeMillis();
 		sendMsg("MSG_REQUEST_ID");
 	}
 	
