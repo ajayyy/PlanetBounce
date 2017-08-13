@@ -97,7 +97,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		test = new Test(0, 0, 0, this);
 		
 		// arrow = new Arrow(planets[0]);
-		messenger = new WebSocketClientMessenger("ajay.ddns.net", 2492, device, this);
+//		messenger = new WebSocketClientMessenger("ajay.ddns.net", 2492, device, this);
+		messenger = new WebSocketClientMessenger("localhost", 2492, device, this);
 
 	}
 	
@@ -238,11 +239,11 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		clientplayer.yspeed = test.yspeed;
 //		clientplayer.xspeed = test.xspeed;
 		
-		for(double i=fulldelta;i>=1/fps;i-=1/fps){
+//		for(double i=fulldelta;i>=1/fps;i-=1/fps){
+////			test.update(this, 1/fps);
 //			test.update(this, 1/fps);
-			test.update(this, 1/fps);
-//			test.update(this, 1/fps, false);
-		}
+////			test.update(this, 1/fps, false);
+//		}
 		
 		for (Player player : new ArrayList<Player>(players)) {
 			for(double i=fulldelta;i>=1/fps;i-=1/fps){
@@ -394,36 +395,36 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			if (id == messenger.getId()) {
 				System.out.println(frame + " real");
 				long currentFrame = clientplayer.frames;
-//				if(frame > currentFrame){
-//					for(long i=currentFrame;frame>i;i++){
-//						System.out.println("seriously -_-");
-//						futureUpdates.add(new Update(1/fps, false));
-//					}
-//				}
+				if(frame > currentFrame){
+					for(long i=currentFrame;frame>i;i++){
+						System.out.println("seriously -_-");
+						futureUpdates.add(new Update(1/fps, false));
+					}
+				}
 				
-//				if(players.isEmpty()){
-//					players.add(new Player(3, clientplayer.mass, this));
-//					players.get(0).x = clientplayer.x;
-//					players.get(0).y = clientplayer.y;
-//					players.get(0).xspeed = clientplayer.xspeed;
-//					players.get(0).yspeed = clientplayer.yspeed;
-//
-//				}
-//				
-//				players.get(0).x = x;
-//				players.get(0).y = y;
-//				players.get(0).yspeed = yspeed;
-//				players.get(0).xspeed = xspeed;
-//				players.get(0).mass = clientplayer.mass;
+				if(players.isEmpty()){
+					players.add(new Player(3, clientplayer.mass, this));
+					players.get(0).x = clientplayer.x;
+					players.get(0).y = clientplayer.y;
+					players.get(0).xspeed = clientplayer.xspeed;
+					players.get(0).yspeed = clientplayer.yspeed;
+
+				}
+				
+				players.get(0).x = x;
+				players.get(0).y = y;
+				players.get(0).yspeed = yspeed;
+				players.get(0).xspeed = xspeed;
+				players.get(0).mass = clientplayer.mass;
 				
 //				testing = System.currentTimeMillis();
 				
-//				if(System.currentTimeMillis() - testing <= 5000){
+				if(System.currentTimeMillis() - testing <= 2500){
 					clientplayer.x = x;
 					clientplayer.y = y;
 					clientplayer.yspeed = yspeed;
 					clientplayer.xspeed = xspeed;
-//				}
+				}
 				
 //				test.x = x;
 //				test.y = y;
@@ -437,39 +438,39 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				
 
 
-				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
-				OldState originalState = getOldStateAtFrame(oldStates, frame, clientplayer);
-				int originalStateIndex = oldStates.indexOf(originalState);
-				if (originalStateIndex == -1)
-					originalStateIndex = 0;
-				OldState beforeState = originalState;
-				if (originalStateIndex > 0)
-					beforeState = oldStates.get(originalStateIndex - 1);
-				OldState afterState = originalState;
-				if (originalStateIndex < oldStates.size() - 1)
-					afterState = oldStates.get(originalStateIndex + 1);
-
-				// int smallerx
-				// if(smallerstate.x)
-
-//				if (!isInBetween(x, beforeState.x, afterState.x) || !isInBetween(y, beforeState.y, afterState.y)
-//						|| !isInBetween(xspeed, beforeState.xspeed, afterState.xspeed)
-//						|| !isInBetween(yspeed, beforeState.yspeed, afterState.yspeed)) {
-				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false);
-				if(isStateInBetween(currentState, beforeState, originalState) && isStateInBetween(currentState, originalState, afterState) &&
-						isStateInBetween(currentState, beforeState, afterState)){//TODO TEST THIS AND IMPLEMENT IT EVERYWHERE ELSE TOO
-
+//				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
+//				OldState originalState = getOldStateAtFrame(oldStates, frame, clientplayer);
+//				int originalStateIndex = oldStates.indexOf(originalState);
+//				if (originalStateIndex == -1)
+//					originalStateIndex = 0;
+//				OldState beforeState = originalState;
+//				if (originalStateIndex > 0)
+//					beforeState = oldStates.get(originalStateIndex - 1);
+//				OldState afterState = originalState;
+//				if (originalStateIndex < oldStates.size() - 1)
+//					afterState = oldStates.get(originalStateIndex + 1);
+//
+//				// int smallerx
+//				// if(smallerstate.x)
+//
+////				if (!isInBetween(x, beforeState.x, afterState.x) || !isInBetween(y, beforeState.y, afterState.y)
+////						|| !isInBetween(xspeed, beforeState.xspeed, afterState.xspeed)
+////						|| !isInBetween(yspeed, beforeState.yspeed, afterState.yspeed)) {
+//				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false);
+//				if(isStateInBetween(currentState, beforeState, originalState) && isStateInBetween(currentState, originalState, afterState) &&
+//						isStateInBetween(currentState, beforeState, afterState)){//TODO TEST THIS AND IMPLEMENT IT EVERYWHERE ELSE TOO
+//
 //					// reset as if we were there (like server)
-//					long currentFrame = clientplayer.frames;
-
-					int amountremoved = oldStates.size() - (originalStateIndex + 1);
-					ArrayList<OldState> oldOldStates = new ArrayList<>();
-					for (int i = 0; i < amountremoved; i++) {// remove all of the future ones
-						oldOldStates.add(oldStates.get(originalStateIndex));
-						oldStates.remove(originalStateIndex);
-					}
-
-					// make now like that old state
+////					long currentFrame = clientplayer.frames;
+//
+//					int amountremoved = oldStates.size() - (originalStateIndex + 1);
+//					ArrayList<OldState> oldOldStates = new ArrayList<>();
+//					for (int i = 0; i < amountremoved; i++) {// remove all of the future ones
+//						oldOldStates.add(oldStates.get(originalStateIndex));
+//						oldStates.remove(originalStateIndex);
+//					}
+//
+//				//	 make now like that old state
 //					if(clientplayer.transformationPlayer != null && clientplayer.transformationPlayerPercent < 100 && clientplayer.transformationPlayerPercent >= 0){
 //						Player newTransformationPlayer = new Player(-1, clientplayer.mass, this);
 //						newTransformationPlayer.x = clientplayer.transformationPlayer.x + ((clientplayer.x - clientplayer.transformationPlayer.x) * (clientplayer.transformationPlayerPercent/100));
@@ -487,26 +488,26 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //					clientplayer.transformationPlayerPercent = 0;
 //					clientplayer.transformationPlayer.left = clientplayer.left;
 //					clientplayer.transformationPlayer.right = clientplayer.right;
-					clientplayer.x = x;
-					clientplayer.y = y;
-					clientplayer.xspeed = xspeed;
-					clientplayer.yspeed = yspeed;
-
-					clientplayer.oldStates = oldStates;
-					for (int i = 0; i < amountremoved; i++) {// remove all of the future ones
-						clientplayer.left = oldOldStates.get(i).left;
-						clientplayer.right = oldOldStates.get(i).right;
-						if(oldOldStates.get(i).shot){
-							clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
-							clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
-						}
-
-//						if(i!=0){
-//							delta = (oldOldStates.get(i).when - oldOldStates.get(i-1).when) / 1000d;
+//					clientplayer.x = x;
+//					clientplayer.y = y;
+//					clientplayer.xspeed = xspeed;
+//					clientplayer.yspeed = yspeed;
+//
+//					clientplayer.oldStates = oldStates;
+//					for (int i = 0; i < amountremoved; i++) {// remove all of the future ones
+//						clientplayer.left = oldOldStates.get(i).left;
+//						clientplayer.right = oldOldStates.get(i).right;
+//						if(oldOldStates.get(i).shot){
+//							clientplayer.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+//							clientplayer.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
 //						}
-						clientplayer.update(this, 1/fps, true);
-					}
-				}
+//
+////						if(i!=0){
+////							delta = (oldOldStates.get(i).when - oldOldStates.get(i-1).when) / 1000d;
+////						}
+//						clientplayer.update(this, 1/fps, true);
+//					}
+//				}
 				
 				
 			} else {

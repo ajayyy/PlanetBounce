@@ -44,6 +44,8 @@ public class ClientPlayer extends Entity{
 	
 	int imagenum;
 	
+	long rightstart;
+	
 	public ClientPlayer(Splats splats){
 		y = 800;
 		
@@ -104,8 +106,8 @@ public class ClientPlayer extends Entity{
 //					System.out.println((player == null) + " " + (planet == null));
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
 			
-			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
-			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
+//			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
+//			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
 		}
 		
 		//bouncing
@@ -146,16 +148,17 @@ public class ClientPlayer extends Entity{
 			if(!simulation){
 				if(!serverstateright){
 					final long now = System.currentTimeMillis();
-					boolean success = splats.messenger.sendMessage("1 " + (now - start));//easily hackable (maybe change?)
+					boolean success = splats.messenger.sendMessage("1 " + (frames));//easily hackable (maybe change?)
 					uncheckedMovements++;
 					moved = true;
+					rightstart = frames;
 				}
 				serverstateright = true;
 			}
 			right = true;
 		}else if(serverstateright){
 			final long now = System.currentTimeMillis();
-			splats.messenger.sendMessage("d1 " + (now - start));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("d1 " + (frames - rightstart));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			moved = true;
 			serverstateright = false;
@@ -171,7 +174,7 @@ public class ClientPlayer extends Entity{
 			if(!simulation){
 				if(!serverstateleft){
 					final long now = System.currentTimeMillis();
-							splats.messenger.sendMessage("-1 " + (now - start));//easily hackable (maybe change?)
+							splats.messenger.sendMessage("-1 " + (frames));//easily hackable (maybe change?)
 					uncheckedMovements++;
 					moved = true;
 				}
@@ -180,7 +183,7 @@ public class ClientPlayer extends Entity{
 			left = true;
 		}else if(serverstateleft){//d disable
 			final long now = System.currentTimeMillis();
-					splats.messenger.sendMessage("d-1 " + (now - start));//easily hackable (maybe change?)
+					splats.messenger.sendMessage("d-1 " + (frames));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			moved = true;
 			serverstateleft = false;
@@ -235,7 +238,7 @@ public class ClientPlayer extends Entity{
 //			exec.schedule(new Runnable(){
 //			    @Override
 //			    public void run(){
-					splats.messenger.sendMessage("s " + projectileangle + " " + (System.currentTimeMillis() - start));//if removed remove unchecked movements too
+					splats.messenger.sendMessage("s " + projectileangle + " " + (frames));//if removed remove unchecked movements too
 //			    }
 //			}, 100, TimeUnit.MILLISECONDS);
 			if(transformationPlayerPercent != -1){

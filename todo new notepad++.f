@@ -25,3 +25,10 @@ should fix all weirdness
 
 hmm, didn't really improve much, maybe try making the check have an actually correct method to set clientplayers coords, then 
 comment it out
+
+since the whole frame thing isnt workingproperly, the end move should supply the amount of frames it took
+
+ok, so tons of issues were fixed (from the switch to frames, not everything was switched). Now try above. If it does not fix
+move on to sublime text, its the most optimisation possible
+
+ok, need to try the simulation with an exact number of frames. 
