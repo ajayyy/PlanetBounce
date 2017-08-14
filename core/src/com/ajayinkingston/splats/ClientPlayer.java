@@ -44,7 +44,7 @@ public class ClientPlayer extends Entity{
 	
 	int imagenum;
 	
-	long rightstart;
+//	long rightstart;
 	
 	public ClientPlayer(Splats splats){
 		y = 800;
@@ -151,14 +151,14 @@ public class ClientPlayer extends Entity{
 					boolean success = splats.messenger.sendMessage("1 " + (frames));//easily hackable (maybe change?)
 					uncheckedMovements++;
 					moved = true;
-					rightstart = frames;
+//					rightstart = frames;
 				}
 				serverstateright = true;
 			}
 			right = true;
 		}else if(serverstateright){
 			final long now = System.currentTimeMillis();
-			splats.messenger.sendMessage("d1 " + (frames - rightstart));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("d1 " + (frames));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			moved = true;
 			serverstateright = false;

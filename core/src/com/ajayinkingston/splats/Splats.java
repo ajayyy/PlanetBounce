@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.utils.Array;
 import com.jlcm.prototipo.ClientMessageReceiver;
 import com.jlcm.prototipo.WebSocketClientMessenger;
@@ -58,6 +59,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	Test test;
 	
 	long testing;
+	
+//	Texture grid;
 
 	public Splats(int device) {// 0 web 1 android 2 iOS 3 desktop
 		this.device = device;//this can be removed because there are built in methods for this. TODO remove this
@@ -80,6 +83,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		for(int i=0;i<playerGlowImages.length;i++){
 			playerGlowImages[i] = new Texture("playerglow"+i+".png");
 		}
+//		grid = new Texture("grid.png");
+//		img.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		// cam = new OrthographicCamera(Gdx.graphics.getWidth()*50,
 		// Gdx.graphics.getHeight()*50);
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -133,8 +138,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 		Gdx.gl.glClearColor(0,0,0f, 1);// Make camera movement smoother
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		
 		batch.begin();
+//		grid.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+//		batch.draw(grid, 500, 0, cam.viewportWidth, cam.viewportHeight);
 		batch.draw(img, 0, 0);
 		batch.end();
 		
@@ -172,31 +179,40 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		}
 		
 		for (Projectile projectile : new ArrayList<>(projectiles)) {
-			projectile.render(this, shapeRenderer);
-			if(System.currentTimeMillis() - projectile.start > 4500 || isTouchingPlanet(projectile, getClosestPlanet(projectile))){
-				projectiles.remove(projectile);
-			}
+			projectile.render(this);
 		}
 //		double fulldelta = delta + leftoverdelta;
 //		for(double i=fulldelta;i>=1/fps;i-=1/fps){
 //			clientplayer.update(this, 1/fps, false);
 //		}
-
-		update(delta, true);
+		
+		double fulldelta = delta + leftoverdelta;
+		for(double i=fulldelta;i>=1/fps;i-=1/fps){
+			update(1/fps);
+		}
+		futureleftoverdelta = fulldelta%(1/fps);
 		for(Update update: new ArrayList<>(futureUpdates)){
-			update(update.delta, update.includeLeftoverDelta);
+			fulldelta = update.delta;
+			if(update.includeLeftoverDelta){
+				fulldelta = update.delta + leftoverdelta;
+			}
+			for(double i=fulldelta;i>=1/fps;i-=1/fps){
+				update(1/fps);
+			}
+			if(update.includeLeftoverDelta) futureleftoverdelta = fulldelta%(1/fps);
 			futureUpdates.remove(update);
 		}
 	}
 	
-	public void update(double delta, boolean includeLeftoverDelta) {
-		double fulldelta = delta + leftoverdelta;
-		if(!includeLeftoverDelta) fulldelta = delta;
-		
-		for(double i=fulldelta;i>=1/fps;i-=1/fps){
-			clientplayer.update(this, 1/fps, false);
+	public void update(double delta) {
+		for (Projectile projectile : new ArrayList<>(projectiles)) {
+			projectile.update(this, delta);
+			if(System.currentTimeMillis() - projectile.start > 4500 || isTouchingPlanet(projectile, getClosestPlanet(projectile))){
+				projectiles.remove(projectile);
+			}
 		}
-		if(includeLeftoverDelta) futureleftoverdelta = fulldelta%(1/fps);
+		
+		clientplayer.update(this, delta, false);
 		
 //		test.x = clientplayer.x;
 //		test.y = clientplayer.y;
@@ -246,10 +262,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		}
 		
 		for (Player player : new ArrayList<Player>(players)) {
-			for(double i=fulldelta;i>=1/fps;i-=1/fps){
-				player.update(this, 1/fps, false);
-			}
-//			if(includeLeftoverDelta) futureleftoverdelta = fulldelta;
+			player.update(this, 1/fps, false);
 		}
 		
 		//collision detection
@@ -285,7 +298,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			}
 		}
 		
-		if(includeLeftoverDelta) leftoverdelta = futureleftoverdelta;
 	}
 	
 	public void affectColidedPlayers(Entity player1, Entity player2){//once the players are collided, this function will deal with them

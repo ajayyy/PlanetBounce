@@ -3,6 +3,7 @@ package com.ajayinkingston.splats;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -27,17 +28,18 @@ public class Projectile extends Entity{
 		start = System.currentTimeMillis();
 	}
 	
-	public void render(Splats splats, ShapeRenderer shapeRenderer){
-		double delta = Gdx.graphics.getDeltaTime();
-		
+	public void render(Splats splats){
 		Vector3 pos = splats.cam.project(new Vector3((int)x*splats.batch.scaleFactor,(int)y*splats.batch.scaleFactor, 0));
 		if(pos.x>0 && pos.x < Gdx.graphics.getWidth() && pos.y>0 && pos.y<Gdx.graphics.getHeight()){
-			shapeRenderer.begin(ShapeType.Filled);
-			shapeRenderer.setColor(Color.WHITE);
-			shapeRenderer.circle((float) x, (float) y, radius);
-			shapeRenderer.end();
+			splats.shapeRenderer.begin(ShapeType.Filled);
+			splats.shapeRenderer.setColor(Color.WHITE);
+			splats.shapeRenderer.circle((float) x, (float) y, radius);
+			splats.shapeRenderer.end();
 		}
 		
+	}
+	
+	public void update(Splats splats, double delta){
 		ArrayList<Planet> closestplanets = splats.getClosestPlanets(this);
 		float gravityx = 0;
 		float gravityy = 0;
