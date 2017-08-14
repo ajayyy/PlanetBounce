@@ -67,7 +67,32 @@ public class ClientPlayer extends Entity{
 	}
 	
 	public void update(final Splats splats, double delta, boolean simulation){
-		System.out.println(frames);
+		if(frames > 60){
+			right = true;
+			simulation = true;
+		}
+		if(frames > 120){
+			right = false;
+			simulation = false;
+		}
+		if(frames > 200){
+			left = true;
+			simulation = true;
+		}
+		if(frames > 250){
+			left = false;
+			simulation = false;
+		}
+		if(frames > 300){
+			right = true;	
+			simulation = true;
+		}
+		if(frames > 350){
+			right = false;
+			simulation = false;
+		}
+		
+		System.out.println(frames + " frames have passed for clientplayer");
 //		start = 0;
 		boolean moved = false;
 		if(!simulation){
@@ -106,8 +131,8 @@ public class ClientPlayer extends Entity{
 //					System.out.println((player == null) + " " + (planet == null));
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
 			
-//			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
-//			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
+			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
+			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
 		}
 		
 		//bouncing
