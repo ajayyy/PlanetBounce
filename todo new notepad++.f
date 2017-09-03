@@ -31,4 +31,4 @@ since the whole frame thing isnt workingproperly, the end move should supply the
 ok, so tons of issues were fixed (from the switch to frames, not everything was switched). Now try above. If it does not fix
 move on to sublime text, its the most optimisation possible
 
-ok, need to try the simulation with an exact number of frames. 
+ok, need to try the simulation with an exact number of frames.: TEST SUCCESS -- except maybe not...

@@ -448,7 +448,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //				players.get(0).yspeed = clientplayer.yspeed;
 //				players.get(0).xspeed = clientplaer.xspeed;
 				
-
+				if(clientplayer.frames < 50){
+					clientplayer.x = x;
+					clientplayer.y = y;
+					clientplayer.xspeed = xspeed;
+					clientplayer.yspeed = yspeed;
+				}
 
 //				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
 //				OldState originalState = getOldStateAtFrame(oldStates, frame, clientplayer);

@@ -9,6 +9,8 @@ Completed ✔
 
 CURRENT TASK: ...
 
+	- make the resimulation work. Currently it doesn't move the same amount of frames on both client and server
+
 	- fix transformationplayer (it is COMPLETELY non functional)
 
 	figure out what the heck is up with it anyway

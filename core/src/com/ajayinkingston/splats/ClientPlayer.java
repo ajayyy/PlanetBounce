@@ -71,7 +71,7 @@ public class ClientPlayer extends Entity{
 			right = true;
 			simulation = true;
 		}
-		if(frames > 120){
+		if(frames > 150){
 			right = false;
 			simulation = false;
 		}
