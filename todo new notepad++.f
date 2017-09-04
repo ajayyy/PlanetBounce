@@ -32,3 +32,11 @@ ok, so tons of issues were fixed (from the switch to frames, not everything was 
 move on to sublime text, its the most optimisation possible
 
 ok, need to try the simulation with an exact number of frames.: TEST SUCCESS -- except maybe not...
+
+could it be the bouncing?
+
+update is not being called, instead just being called by the check method for some reason -_-
+
+well, above is fixed, but now bouncing is still having issues, and the update from the check method is not broken anymore
+
+try to make bouncing work the same every time (shouldn't it?)

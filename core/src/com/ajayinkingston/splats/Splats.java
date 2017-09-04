@@ -31,6 +31,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	Texture img;
 
 	ClientPlayer clientplayer;
+	boolean start;//starts false and when the server tells us it has started, this becomes true, to know when to start calculating
 
 	ArrayList<Player> players = new ArrayList<>();
 
@@ -52,7 +53,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	int mapsize = 30000;
 	
 	double leftoverdelta; //delta left over after the 40fps
-	double futureleftoverdelta; //first this variable is set, then leftoverdelta becomes this by the end of the frame
 	double fps = 40;//fps to update at
 	ArrayList<Update> futureUpdates = new ArrayList<>();
 	
@@ -188,9 +188,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		double fulldelta = delta + leftoverdelta;
 		for(double i=fulldelta;i>=1/fps;i-=1/fps){
-			update(1/fps);
+			if(start) update(1/fps);
 		}
-		futureleftoverdelta = fulldelta%(1/fps);
+		leftoverdelta = fulldelta%(1/fps);
+		int loops = 0;
 		for(Update update: new ArrayList<>(futureUpdates)){
 			fulldelta = update.delta;
 			if(update.includeLeftoverDelta){
@@ -199,9 +200,11 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			for(double i=fulldelta;i>=1/fps;i-=1/fps){
 				update(1/fps);
 			}
-			if(update.includeLeftoverDelta) futureleftoverdelta = fulldelta%(1/fps);
+			if(update.includeLeftoverDelta) leftoverdelta = fulldelta%(1/fps);
 			futureUpdates.remove(update);
+			loops++;
 		}
+		System.out.println("LOOPS FOR FUTUREUPDATES: " + loops);
 	}
 	
 	public void update(double delta) {
@@ -395,6 +398,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			
 		} else if (message.startsWith("POSCHANGE")) {
 			clientplayer.y = Float.parseFloat(message.split(" ")[2]);
+		} else if (message.startsWith("START")) {
+			start = true;
 		} else if (message.startsWith("CHECK")) {
 //			if(true) return;
 			int id = Integer.parseInt(message.split(" ")[1]);
@@ -407,8 +412,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			if (id == messenger.getId()) {
 				System.out.println(frame + " real");
 				long currentFrame = clientplayer.frames;
-				if(frame > currentFrame){
-					for(long i=currentFrame;frame>i;i++){
+				if(frame > currentFrame + futureUpdates.size()){
+					for(long i=currentFrame + futureUpdates.size();frame>i;i++){
 						System.out.println("seriously -_-");
 						futureUpdates.add(new Update(1/fps, false));
 					}
