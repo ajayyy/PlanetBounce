@@ -40,3 +40,7 @@ update is not being called, instead just being called by the check method for so
 well, above is fixed, but now bouncing is still having issues, and the update from the check method is not broken anymore
 
 try to make bouncing work the same every time (shouldn't it?)
+
+then make it so it will skip frames if the client got ahead --done this
+
+(up to a limit, if it hits the limit, it will skip a few frames, move a few frames, and skip a few frames)  --not done this

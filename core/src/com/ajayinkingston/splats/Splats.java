@@ -55,6 +55,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	double leftoverdelta; //delta left over after the 40fps
 	double fps = 40;//fps to update at
 	ArrayList<Update> futureUpdates = new ArrayList<>();
+	long aheadUpdates = 0;
 	
 	Test test;
 	
@@ -188,7 +189,13 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		double fulldelta = delta + leftoverdelta;
 		for(double i=fulldelta;i>=1/fps;i-=1/fps){
-			if(start) update(1/fps);
+			if(start){
+				if(aheadUpdates > 0){
+					aheadUpdates--;
+					continue;
+				}
+				update(1/fps);
+			}
 		}
 		leftoverdelta = fulldelta%(1/fps);
 		int loops = 0;
@@ -412,12 +419,15 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			if (id == messenger.getId()) {
 				System.out.println(frame + " real");
 				long currentFrame = clientplayer.frames;
-				if(frame > currentFrame + futureUpdates.size()){
-					for(long i=currentFrame + futureUpdates.size();frame>i;i++){
+				if(frame > currentFrame + futureUpdates.size() - aheadUpdates){
+					for(long i=currentFrame + futureUpdates.size() - aheadUpdates;frame>i;i++){
 						System.out.println("seriously -_-");
 						futureUpdates.add(new Update(1/fps, false));
 					}
 				}
+//				if(frame < currentFrame + futureUpdates.size() - aheadUpdates){
+//					aheadUpdates = (currentFrame + futureUpdates.size() - aheadUpdates) - frame;
+//				}
 				
 				if(players.isEmpty()){
 					players.add(new Player(3, clientplayer.mass, this));
@@ -868,11 +878,9 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 					// System.out.println("DJASDJSADJKASDJKLSADJLKJADSLKDSJALKSJDALKSJADKJDKSADASJKSDAJKL"+(planets[i]==null));
 					// System.out.println("DJASDJSADJKASDJKLSADJLKJADSLKDSJALKSJDALKSJADKJDKSADASJKSDAJKL"+(planets[i]==null));
 					closest = planets[i];
-					closestdistance = (float) (Math.pow(Math.abs(player.x - planets[i].x), 2)
-							+ Math.pow(Math.abs(player.y - planets[i].y), 2));
+					closestdistance = (float) (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2));
 				}
-				if (planets[i] == null)
-					System.out.print(i + "sdsadsadSADKLJAKLJADLKJDLKJADSKLoiurweiourweoi");
+				if (planets[i] == null) System.out.print(i + "sdsadsadSADKLJAKLJADLKJDLKJADSKLoiurweiourweoi");
 			} else if (closest == null || Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < closestdistance) {
 				closest = planets[i];
 				closestdistance = (float) (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2));
@@ -893,7 +901,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	}
 
 	public boolean isTouchingPlanet(Entity player, Planet planet) {
-		return Math.pow(Math.abs(player.x - planet.x), 2) + Math.pow(Math.abs(player.y - planet.y), 2) < Math.pow(player.getSize() / 2 + planet.radius, 2);
+		return Math.pow(Math.abs(player.x - planet.x), 2) + Math.pow(Math.abs(player.y - planet.y), 2) < Math.pow(player.getRadius() + planet.radius, 2);
 	}
 
 	public double getAngleFromPlanet(Player player, Planet planet) {

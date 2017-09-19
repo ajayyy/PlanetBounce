@@ -72,10 +72,10 @@ public class Player extends Entity{
 			xspeed = (float) (Math.cos(finalangle) * planet.bounceheight);
 			yspeed = (float) (Math.sin(finalangle) * planet.bounceheight);
 			
-			double newx = planet.x + planet.radius * ((x - planet.x) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
-			double newy = planet.y + planet.radius * ((y - planet.y) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
-			x = (float) (newx + Math.cos(angle) * (getRadius()+2));
-			y = (float) (newy + Math.sin(angle) * (getRadius()+2));
+//			double newx = planet.x + planet.radius * ((x - planet.x) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
+//			double newy = planet.y + planet.radius * ((y - planet.y) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
+//			x = (float) (newx + Math.cos(angle) * (getRadius()+2));
+//			y = (float) (newy + Math.sin(angle) * (getRadius()+2));
 		}
 		
 		//add gravity speeds to speed
