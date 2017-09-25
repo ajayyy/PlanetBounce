@@ -67,10 +67,10 @@ public class ClientPlayer extends Entity{
 	}
 	
 	public void update(final Splats splats, double delta, boolean simulation){
-//		if(frames > 60){
-//			right = true;
-//			simulation = true;
-//		}
+		if(frames > 60){
+			right = true;
+			simulation = true;
+		}
 //		if(frames > 150){
 //			right = false;
 //			simulation = false;
@@ -87,10 +87,10 @@ public class ClientPlayer extends Entity{
 //			right = true;	
 //			simulation = true;
 //		}
-//		if(frames > 350){
-//			right = false;
-//			simulation = false;
-//		}
+		if(frames > 350){
+			right = false;
+			simulation = false;
+		}
 		
 		System.out.println(frames + " frames have passed for clientplayer");
 //		start = 0;
@@ -136,10 +136,10 @@ public class ClientPlayer extends Entity{
 		}
 		
 		//bouncing
-		Planet planet = closest;
+		Planet planet = splats.getClosestPlanet(this);
 		if(splats.isTouchingPlanet(this, planet)){
 			System.out.println(frames + " frame bounced at");
-			System.out.println("COLLIDING");
+//			System.out.println("COLLIDING");
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
 			
 			double ux = 2 * (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle))) * Math.cos(angle);

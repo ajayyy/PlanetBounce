@@ -99,7 +99,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		clientplayer = new ClientPlayer(this);
 		
 //		test = new Test(this);
-		test = new Test(0, 0, 0, 0, 0);
+		test = new Test(0, 0, 0, 0);
 //		test = new Test(0, 0, 0, this);
 		
 		// arrow = new Arrow(planets[0]);
@@ -211,7 +211,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			futureUpdates.remove(update);
 			loops++;
 		}
-		System.out.println("LOOPS FOR FUTUREUPDATES: " + loops);
+//		System.out.println("LOOPS FOR FUTUREUPDATES: " + loops);
 	}
 	
 	public void update(double delta) {
@@ -353,7 +353,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	@Override
 	public void onMessageRecieved(String message) {
 		if (message.startsWith("CONNECTED")) {
-			System.out.println("sdsdsadsda");
+//			System.out.println("sdsdsadsda");
 			Player player = new Player(Integer.parseInt(message.split(" ")[1]), Integer.parseInt(message.split(" ")[6]), this);
 			player.x = Float.parseFloat(message.split(" ")[2]);
 			player.y = Float.parseFloat(message.split(" ")[3]);
@@ -447,10 +447,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //				testing = System.currentTimeMillis();
 				
 				if(System.currentTimeMillis() - testing <= 2500){
-					clientplayer.x = x;
-					clientplayer.y = y;
-					clientplayer.yspeed = yspeed;
-					clientplayer.xspeed = xspeed;
+//					clientplayer.x = x;
+//					clientplayer.y = y;
+//					clientplayer.yspeed = yspeed;
+//					clientplayer.xspeed = xspeed;
 				}
 				
 //				test.x = x;
@@ -463,12 +463,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //				players.get(0).yspeed = clientplayer.yspeed;
 //				players.get(0).xspeed = clientplaer.xspeed;
 				
-				if(clientplayer.frames < 50){
-					clientplayer.x = x;
-					clientplayer.y = y;
-					clientplayer.xspeed = xspeed;
-					clientplayer.yspeed = yspeed;
-				}
+//				if(clientplayer.frames < 50){
+//					clientplayer.x = x;
+//					clientplayer.y = y;
+//					clientplayer.xspeed = xspeed;
+//					clientplayer.yspeed = yspeed;
+//				}
 
 //				ArrayList<OldState> oldStates = new ArrayList<>(clientplayer.oldStates);
 //				OldState originalState = getOldStateAtFrame(oldStates, frame, clientplayer);
@@ -838,50 +838,15 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			if (planets[i] == null) {
 				System.out.println("Planet is null: " + i);
 			}
-			// if(Math.pow(Math.abs(player.x - planets[i].x), 2) +
-			// Math.pow(Math.abs(player.y - planets[i].y), 2) <
-			// Math.pow(playersize/2 + planets[i].radius, 2)){
-			// collided
-			// double angle = Math.atan2((player.y) - (planets[i].y), (player.x)
-			// - (planets[i].x));
-			//// double angle = Math.atan2((splats.planets[i].y) - y,
-			// (splats.planets[i].x) - x);
-			//
-			// player.yspeed = (float) (Math.sin(angle) *
-			// planets[i].bounceheight); //TODO BOUNCE HEIGHT A FORMULA FROM
-			// GRAVITY TO DIFFER IN EVERY PLANET AND FOR EVERY PLAYER WITH
-			// DIFFERENT MASS
-			// player.xspeed = (float) (Math.cos(angle) *
-			// planets[i].bounceheight);
-			//// yspeed = -yspeed;
-			//// System.out.println((Math.cos(angle) * splats.planets[i].gravity
-			// / (Math.sqrt(Math.pow((y) - (splats.planets[i].y), 2) +
-			// Math.pow((x) - (splats.planets[i].x), 2))) * 400) + " " +
-			// (Math.sin(angle) * splats.planets[i].gravity /
-			// (Math.sqrt(Math.pow((y) - (splats.planets[i].y), 2) +
-			// Math.pow((x) - (splats.planets[i].x), 2))) * 400));
-			// closeplanets.add(splats.planets[i]);
-			// if(closest == null || Math.pow(Math.abs(x - splats.planets[i].x),
-			// 2) + Math.pow(Math.abs(y - splats.planets[i].y), 2) <
-			// closestdistance){
-			// closest = splats.planets[i];
-			// closestdistance = (float) (Math.pow(Math.abs(x -
-			// splats.planets[i].x), 2) + Math.pow(Math.abs(y -
-			// splats.planets[i].y), 2));
-			// }
 			if (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < Math.pow(player.getSize() / 2 + (planets[i].radius * 3.5f), 2)) {
-				// close
+				//close
 				closeplanets.add(planets[i]);
-				if (closest == null || Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < closestdistance) {
-					// System.out.println("DJASDJSADJKASDJKLSADJLKJADSLKDSJALKSJDALKSJADKJDKSADASJKSDAJKL"+(planets[i]==null));
-					// System.out.println("DJASDJSADJKASDJKLSADJLKJADSLKDSJALKSJDALKSJADKJDKSADASJKSDAJKL"+(planets[i]==null));
-					// System.out.println("DJASDJSADJKASDJKLSADJLKJADSLKDSJALKSJDALKSJADKJDKSADASJKSDAJKL"+(planets[i]==null));
-					// System.out.println("DJASDJSADJKASDJKLSADJLKJADSLKDSJALKSJDALKSJADKJDKSADASJKSDAJKL"+(planets[i]==null));
+				if(closest == null || Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < closestdistance){
 					closest = planets[i];
 					closestdistance = (float) (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2));
 				}
-				if (planets[i] == null) System.out.print(i + "sdsadsadSADKLJAKLJADLKJDLKJADSKLoiurweiourweoi");
-			} else if (closest == null || Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < closestdistance) {
+				if(planets[i] == null) System.out.print(i+"sdsadsadSADKLJAKLJADLKJDLKJADSKLoiurweiourweoi");
+			}else if(closest == null || Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2) < closestdistance){
 				closest = planets[i];
 				closestdistance = (float) (Math.pow(Math.abs(player.x - planets[i].x), 2) + Math.pow(Math.abs(player.y - planets[i].y), 2));
 			}

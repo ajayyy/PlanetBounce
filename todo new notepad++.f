@@ -41,6 +41,20 @@ well, above is fixed, but now bouncing is still having issues, and the update fr
 
 try to make bouncing work the same every time (shouldn't it?)
 
+could it be the moving left and right code (as in trying to make it move with the planet)
+
+now it seems to be working with the test code, but not actually playing, is the server actually replaying from right frame
+
+	- ok, works with test code confirmed, means it is now a problem of telling the server what frame the event happened at
+	
+	server code looks fine, see what is the issue server side
+	
+	ITS WHEN THE BUTTON IS HELD FOR TOO LONG (NOT WHEN IT WAS CLICKED)
+	when testing, this even happens (ie both are on the same frame) could be that the code to know what angle to move is wrong
+
+proabbaly will have to move the send check message to the end of the update and make it so the client sets the pos right before starting the right frame
+
+
 then make it so it will skip frames if the client got ahead --done this
 
 (up to a limit, if it hits the limit, it will skip a few frames, move a few frames, and skip a few frames)  --not done this
