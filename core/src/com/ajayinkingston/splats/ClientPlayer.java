@@ -46,6 +46,8 @@ public class ClientPlayer extends Entity{
 	
 //	long rightstart;
 	
+//	final float xspeed,yspeed;
+	
 	public ClientPlayer(Splats splats){
 		y = 800;
 		
@@ -168,6 +170,7 @@ public class ClientPlayer extends Entity{
 		if((Gdx.input.isKeyPressed(Input.Keys.D) && !simulation) || (simulation && this.right)){
 			xspeed += Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 			yspeed += Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			System.out.println(frames + " MOVED BY X " + (Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta) + " MOVED BY Y " + Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta + " AT ANGLE " + splats.getClosestAngle(this) + " X " + x + " Y " + y);
 			
 //			x+=Math.cos(0) * 500*delta;
 //			y+=Math.sin(0) * 500*delta;

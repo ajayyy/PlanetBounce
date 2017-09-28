@@ -52,6 +52,12 @@ now it seems to be working with the test code, but not actually playing, is the 
 	ITS WHEN THE BUTTON IS HELD FOR TOO LONG (NOT WHEN IT WAS CLICKED)
 	when testing, this even happens (ie both are on the same frame) could be that the code to know what angle to move is wrong
 
+	try with only 1 planet (does it do the same thing)? --Answer is yes, meaning the angle code is CONFIRMED WRONG now. but how?
+	
+	weird, somehow pos gets slightly off and it must be caused by some other random thing (is the client setting its x or something)
+	
+	hmmmmm server frames are behind still?
+	
 proabbaly will have to move the send check message to the end of the update and make it so the client sets the pos right before starting the right frame
 
 

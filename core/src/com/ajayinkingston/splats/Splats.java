@@ -404,7 +404,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			}
 			
 		} else if (message.startsWith("POSCHANGE")) {
-			clientplayer.y = Float.parseFloat(message.split(" ")[2]);
+//			clientplayer.y = Float.parseFloat(message.split(" ")[2]);
 		} else if (message.startsWith("START")) {
 			start = true;
 		} else if (message.startsWith("CHECK")) {
