@@ -115,7 +115,6 @@ public class Player extends Entity{
 					transformationPlayer.projectileAngle = projectileAngle;
 				}
 			}
-			shooting = false;
 		}
 		
 		if(transformationPlayerPercent != -1 && real && !simulation){
@@ -127,12 +126,13 @@ public class Player extends Entity{
 //		System.out.println(xspeed + " " + yspeed);
 		
 		if(real){
-			OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right);
+			OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right, shooting);
 			oldStates.add(oldState);
 			while(oldStates.size() > 90){//1.5 seconds of old state data
 				oldStates.remove(0);
 			}
 		}
+		shooting = false;
 		frames++;
 	}
 	

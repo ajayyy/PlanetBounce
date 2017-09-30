@@ -69,6 +69,8 @@ public class ClientPlayer extends Entity{
 	}
 	
 	public void update(final Splats splats, double delta, boolean simulation){
+		boolean shot = false;
+		
 		if(frames > 60){
 			right = true;
 			simulation = true;
@@ -168,6 +170,8 @@ public class ClientPlayer extends Entity{
 		boolean left = false;
 		boolean right = false;
 		if((Gdx.input.isKeyPressed(Input.Keys.D) && !simulation) || (simulation && this.right)){
+			shot = true;
+			
 			xspeed += Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 			yspeed += Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 			System.out.println(frames + " MOVED BY X " + (Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta) + " MOVED BY Y " + Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta + " AT ANGLE " + splats.getClosestAngle(this) + " X " + x + " Y " + y);
@@ -320,7 +324,7 @@ public class ClientPlayer extends Entity{
 		}
 		
 		//save state to old states
-		OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right);
+		OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right, shot);
 		oldStates.add(oldState);
 		while(oldStates.size() > 90){//1.5 seconds of old state data
 			oldStates.remove(0);

@@ -99,7 +99,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		clientplayer = new ClientPlayer(this);
 		
 //		test = new Test(this);
-		test = new Test(0, 0, 0, 0);
+		test = new Test(0, 0, 800, 0);
 //		test = new Test(0, 0, 0, this);
 		
 		// arrow = new Arrow(planets[0]);
@@ -265,15 +265,13 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		clientplayer.yspeed = test.yspeed;
 //		clientplayer.xspeed = test.xspeed;
 		
-//		for(double i=fulldelta;i>=1/fps;i-=1/fps){
-////			test.update(this, 1/fps);
-//			test.update(this, 1/fps);
-////			test.update(this, 1/fps, false);
-//		}
+//		test.update(this, 1/fps);
+		test.update(this, delta);
+//		test.update(this, 1/fps, false);
 		
-		for (Player player : new ArrayList<Player>(players)) {
-			player.update(this, 1/fps, false);
-		}
+//		for (Player player : new ArrayList<Player>(players)) {
+//			player.update(this, 1/fps, false);
+//		}
 		
 		//collision detection
 		Position position = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
@@ -562,7 +560,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //				if (!isInBetween(x, beforeState.x, afterState.x) || !isInBetween(y, beforeState.y, afterState.y)
 //						|| !isInBetween(xspeed, beforeState.xspeed, afterState.xspeed)
 //						|| !isInBetween(yspeed, beforeState.yspeed, afterState.yspeed)) {
-				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false);
+				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false, false);
 				if(isStateInBetween(currentState, beforeState, originalState) && isStateInBetween(currentState, originalState, afterState) &&
 						isStateInBetween(currentState, beforeState, afterState)){//TODO TEST THIS AND IMPLEMENT IT EVERYWHERE ELSE TOO
 

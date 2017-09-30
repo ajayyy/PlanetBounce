@@ -2,7 +2,6 @@ package com.ajayinkingston.splats;
 
 import java.util.ArrayList;
 
-
 public class Test extends Entity{
 int id;
 	
@@ -32,9 +31,9 @@ int id;
 			pausedStack++;
 			return;
 		}
-//		if(frames > 60){
-//			right = true;
-//		}
+		if(frames > 60){
+			right = true;
+		}
 //		if(frames > 150){
 //			right = false;
 //		}
@@ -47,9 +46,9 @@ int id;
 //		if(frames > 300){
 //			right = true;
 //		}
-//		if(frames > 350){
-//			right = false;
-//		}
+		if(frames > 350){
+			right = false;
+		}
 		
 		//gravity
 		ArrayList<Planet> closestplanets = main.getClosestPlanets(this);
@@ -98,9 +97,9 @@ int id;
 //			int foody = (int) (Math.sin(food.angle)*(planet.radius+food.getSize()/2+5) + planet.y);
 //			if(x+getSize()>foodx && x<foodx+food.getSize() && y+getSize()>foody && y<foody+food.getSize()){
 //				food.enabled = false;
-////				main.messenger.sendMessageToAll("COLLECT " + id + " " + food.getAmount());
-////				main.messenger.sendMessageToAll("FOOD " + main.getIndexOf(planet, main.planets) + " " + i + " " + false + " " + 0 + " " + 0);
-////				mass += food.getAmount();
+//				main.messenger.sendMessageToAll("COLLECT " + id + " " + food.getAmount());
+//				main.messenger.sendMessageToAll("FOOD " + main.getIndexOf(planet, main.planets) + " " + i + " " + false + " " + 0 + " " + 0);
+//				mass += food.getAmount();
 //			}
 //		}
 		
@@ -109,24 +108,26 @@ int id;
 		yspeed += gravityy*delta;
 		
 		//movement
-//		if(right){
-//			xspeed += Math.cos(main.getClosestAngle(this)+1.5708)*main.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-//			yspeed += Math.sin(main.getClosestAngle(this)+1.5708)*main.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-//			
-////			x+=Math.cos(0) * 500*delta;
-////			y+=Math.sin(0) * 500*delta;
-//			
-////			if(rightstart == -1){
-////				rightstart = frames;
-////			}
-//		}
-//		if(left){
-//			xspeed += Math.cos(main.getClosestAngle(this)-1.5708)*main.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-//			yspeed += Math.sin(main.getClosestAngle(this)-1.5708)*main.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-//
-////			x+=Math.cos(-Math.PI) * 500*delta;
-////			y+=Math.sin(-Math.PI) * 500*delta;
-//		}
+		if(right){
+			xspeed += Math.cos(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed += Math.sin(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			
+//			System.out.println(frames + " MOVED BY X " + (Math.cos(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta) + " MOVED BY Y " + Math.sin(main.getClosestAngle(this)+1.5708)*main.speed * delta + " AT ANGLE " + main.getClosestAngle(this) + " X " + x + " Y " + y);
+			
+//			x+=Math.cos(0) * 500*delta;
+//			y+=Math.sin(0) * 500*delta;
+			
+//			if(rightstart == -1){
+//				rightstart = frames;
+//			}
+		}
+		if(left){
+			xspeed += Math.cos(main.getClosestAngle(this)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed += Math.sin(main.getClosestAngle(this)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+
+//			x+=Math.cos(-Math.PI) * 500*delta;
+//			y+=Math.sin(-Math.PI) * 500*delta;
+		}
 		
 		//friction
 		if(Math.abs(xspeed) < friction*delta) xspeed = 0;
@@ -144,7 +145,7 @@ int id;
 //		System.out.println("X: " + x + " Y: " + y + " DELTA: " + delta);
 		
 		//save old states
-		oldStates.add(new OldState(x, y, xspeed, yspeed, frames, left, right));
+		oldStates.add(new OldState(x, y, xspeed, yspeed, frames, left, right, false));
 		if(oldStates.size() > 200) oldStates.remove(0);
 		
 		frames++;
