@@ -56,6 +56,8 @@ now it seems to be working with the test code, but not actually playing, is the 
 	
 	weird, somehow pos gets slightly off and it must be caused by some other random thing (is the client setting its x or something)
 	
+	IT WAS THE FOOD ALL ALONG, fix the food I guess?
+	
 	hmmmmm server frames are behind still?
 	
 proabbaly will have to move the send check message to the end of the update and make it so the client sets the pos right before starting the right frame
