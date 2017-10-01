@@ -60,6 +60,8 @@ now it seems to be working with the test code, but not actually playing, is the 
 	
 	Add something to a list to make the fixing happen on same thread
 	
+	next step is to implement the movement class into the client too for the connecting players
+	
 	hmmmmm server frames are behind still?
 	
 proabbaly will have to move the send check message to the end of the update and make it so the client sets the pos right before starting the right frame

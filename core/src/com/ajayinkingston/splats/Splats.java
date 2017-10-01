@@ -120,10 +120,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 	@Override
 	public void render() {
-		if (Gdx.graphics.getRawDeltaTime() > 0.1) {
-			Gdx.graphics.setTitle("UNDER 10 FPS");
-			return;
-		}
+//		if (Gdx.graphics.getRawDeltaTime() > 0.1) {
+//			Gdx.graphics.setTitle("UNDER 10 FPS");
+//			return;
+//		}
 		if (planets.length < 1)
 			return;
 		// messenger.sendMessage(clientplayer.x + " " + clientplayer.y + " " +

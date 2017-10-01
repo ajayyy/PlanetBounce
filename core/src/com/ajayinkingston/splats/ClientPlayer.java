@@ -71,38 +71,38 @@ public class ClientPlayer extends Entity{
 	public void update(final Splats splats, double delta, boolean simulation){
 		boolean shot = false;
 		
-		if(frames > 60){
-			left = true;
-			simulation = true;
-		}
-//		if(frames > 150){
-//			right = false;
-//			simulation = false;
-//		}
-//		if(frames > 200){
+//		if(frames > 60){
 //			left = true;
 //			simulation = true;
 //		}
-//		if(frames > 250){
+////		if(frames > 150){
+////			right = false;
+////			simulation = false;
+////		}
+////		if(frames > 200){
+////			left = true;
+////			simulation = true;
+////		}
+////		if(frames > 250){
+////			left = false;
+////			simulation = false;
+////		}
+////		if(frames > 300){
+////			right = true;	
+////			simulation = true;
+////		}
+//		if(frames > 350){
 //			left = false;
 //			simulation = false;
 //		}
-//		if(frames > 300){
-//			right = true;	
+//		if(frames > 500){
+//			right = true;
 //			simulation = true;
 //		}
-		if(frames > 350){
-			left = false;
-			simulation = false;
-		}
-		if(frames > 500){
-			right = true;
-			simulation = true;
-		}
-		if(frames > 650){
-			right = false;
-			simulation = false;
-		}
+//		if(frames > 650){
+//			right = false;
+//			simulation = false;
+//		}
 		
 		System.out.println(frames + " frames have passed for clientplayer");
 //		start = 0;
