@@ -8,8 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.jlcm.prototipo.ClientMessageReceiver;
 import com.jlcm.prototipo.WebSocketClientMessenger;
 
@@ -77,12 +76,15 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		shadow = new Texture("shadow.png");
 		for(int i=0;i<pointImages.length;i++){
 			pointImages[i] = new Texture("point"+i+".png");
+			pointImages[i].setFilter(TextureFilter.Linear, TextureFilter.Linear); 
 		}
 		for(int i=0;i<playerImages.length;i++){
 			playerImages[i] = new Texture("player"+i+".png");
+			playerImages[i].setFilter(TextureFilter.Linear, TextureFilter.Linear); 
 		}
 		for(int i=0;i<playerGlowImages.length;i++){
 			playerGlowImages[i] = new Texture("playerglow"+i+".png");
+			playerGlowImages[i].setFilter(TextureFilter.Linear, TextureFilter.Linear); 
 		}
 //		grid = new Texture("grid.png");
 //		img.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -139,6 +141,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 		Gdx.gl.glClearColor(0,0,0f, 1);// Make camera movement smoother
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
+
 		
 		batch.begin();
 //		grid.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -266,15 +270,15 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		clientplayer.xspeed = test.xspeed;
 		
 //		test.update(this, 1/fps);
-		test.update(this, delta);
+//		test.update(this, delta);
 //		test.update(this, 1/fps, false);
 		
-//		for (Player player : new ArrayList<Player>(players)) {
-//			player.update(this, 1/fps, false);
-//		}
+		for (Player player : new ArrayList<Player>(players)) {
+			player.update(this, 1/fps, false);
+		}
 		
 		//collision detection
-		Position position = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
+//		Position position = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
 //		for(Player player2: players){//for clientplayer to player
 //			if(player2.collided(position)){
 //				//collided with player

@@ -9,6 +9,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 1000;
 		config.height = 600;
+//		config.samples = 4;
+		System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
 		new LwjglApplication(new Splats(3), config);
 	}
 }

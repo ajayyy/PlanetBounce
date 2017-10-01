@@ -72,7 +72,7 @@ public class ClientPlayer extends Entity{
 		boolean shot = false;
 		
 		if(frames > 60){
-			right = true;
+			left = true;
 			simulation = true;
 		}
 //		if(frames > 150){
@@ -92,6 +92,14 @@ public class ClientPlayer extends Entity{
 //			simulation = true;
 //		}
 		if(frames > 350){
+			left = false;
+			simulation = false;
+		}
+		if(frames > 500){
+			right = true;
+			simulation = true;
+		}
+		if(frames > 650){
 			right = false;
 			simulation = false;
 		}
@@ -174,7 +182,7 @@ public class ClientPlayer extends Entity{
 			
 			xspeed += Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 			yspeed += Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			System.out.println(frames + " MOVED BY X " + (Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta) + " MOVED BY Y " + Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta + " AT ANGLE " + splats.getClosestAngle(this) + " X " + x + " Y " + y);
+//			System.out.println(frames + " MOVED BY X " + (Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta) + " MOVED BY Y " + Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta + " AT ANGLE " + splats.getClosestAngle(this) + " X " + x + " Y " + y);
 			
 //			x+=Math.cos(0) * 500*delta;
 //			y+=Math.sin(0) * 500*delta;
