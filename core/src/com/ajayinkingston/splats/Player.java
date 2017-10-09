@@ -43,7 +43,8 @@ public class Player extends Entity{
 	}
 	
 	public void update(Splats splats, double delta, boolean simulation){
-		
+		frames++;
+
 		//gravity
 		ArrayList<Planet> closestplanets = splats.getClosestPlanets(this);
 		float gravityx = 0;
@@ -133,7 +134,6 @@ public class Player extends Entity{
 			}
 		}
 		shooting = false;
-		frames++;
 	}
 	
 	public void render(Splats splats, double delta){

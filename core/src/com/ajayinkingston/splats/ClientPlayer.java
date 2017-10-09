@@ -69,6 +69,8 @@ public class ClientPlayer extends Entity{
 	}
 	
 	public void update(final Splats splats, double delta, boolean simulation){
+		frames++;
+		
 		boolean shot = false;
 		
 //		if(frames > 60){
@@ -340,8 +342,6 @@ public class ClientPlayer extends Entity{
 		if(moved){
 			uncheckedOldStates.add(oldState);
 		}
-		frames++;
-		
 	}
 	
 //	public double addAtFps(double original, double addition, double delta){ //adds, but only at 40 fps

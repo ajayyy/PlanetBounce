@@ -298,12 +298,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		//projectile collision detection
 		Position clientplayerposition = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
 		for(Projectile projectile: new ArrayList<>(projectiles)){
-			for(Player player: players){
-				Position projectile1 = new Position(projectile.x,projectile.y,projectile.radius);
-				if(player.collided(projectile1)){
-					affectColidedPlayers(player, projectile);
-				}
-			}
+//			for(Player player: players){
+//				Position projectile1 = new Position(projectile.x,projectile.y,projectile.radius);
+//				if(player.collided(projectile1)){
+//					affectColidedPlayers(player, projectile);
+//				}
+//			}
 			if(projectile.collided(clientplayerposition)){
 				//collided with player
 				affectColidedPlayers(clientplayer, projectile);

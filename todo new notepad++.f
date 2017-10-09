@@ -62,6 +62,13 @@ now it seems to be working with the test code, but not actually playing, is the 
 	
 	next step is to implement the movement class into the client too for the connecting players
 	
+	it's not 100% perfect, but that can easily be fixed with easy checks
+	
+
+	
+	clone player class for simulation, then set it
+	if(player.frames < amount of frames) dont add it to the players list for a bit and set its data to its first data
+		
 	hmmmmm server frames are behind still?
 	
 proabbaly will have to move the send check message to the end of the update and make it so the client sets the pos right before starting the right frame
