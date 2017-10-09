@@ -44,6 +44,8 @@ public class ClientPlayer extends Entity{
 	
 	int imagenum;
 	
+	double projectileangle;
+	
 //	long rightstart;
 	
 //	final float xspeed,yspeed;
@@ -274,7 +276,7 @@ public class ClientPlayer extends Entity{
 			Vector3 clickpos = splats.cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0));
 //			clickpos.x /= splats.batch.scaleFactor;
 //			clickpos.y *= splats.batch.scaleFactor;
-			final double projectileangle = Math.atan2(clickpos.y-(y*splats.batch.scaleFactor), clickpos.x-(x*splats.batch.scaleFactor));
+			projectileangle = Math.atan2(clickpos.y-(y*splats.batch.scaleFactor), clickpos.x-(x*splats.batch.scaleFactor));
 			splats.projectiles.add(new Projectile(x + ((getSize() + splats.projectilesize/2) * Math.cos(projectileangle)), y + ((getSize() + splats.projectilesize/2) * Math.sin(projectileangle)), splats.projectilesize, projectileangle, splats.projectileSpeed));
 //			projectiles.add(new Projectile(clientplayer.x, clientplayer.y, projectilesize, Math.atan2((Gdx.graphics.getHeight()-Gdx.input.getY()) - (playerpos) + Gdx.graphics.getHeight()/2), Gdx.input.getX() - (Gdx.graphics.getWidth()/2+clientplayer.x))+clientplayer.rotation+Math.PI/2, 1000));
 //			final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
@@ -334,7 +336,7 @@ public class ClientPlayer extends Entity{
 		}
 		
 		//save state to old states
-		OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right, shot);
+		OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right, shot, (float) projectileangle);
 		oldStates.add(oldState);
 		while(oldStates.size() > 90){//1.5 seconds of old state data
 			oldStates.remove(0);

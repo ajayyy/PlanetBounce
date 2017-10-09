@@ -43,6 +43,8 @@ public class Player extends Entity{
 	}
 	
 	public void update(Splats splats, double delta, boolean simulation){
+		shooting = false;
+		
 		frames++;
 
 		//gravity
@@ -127,13 +129,12 @@ public class Player extends Entity{
 //		System.out.println(xspeed + " " + yspeed);
 		
 		if(real){
-			OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right, shooting);
+			OldState oldState = new OldState(x, y, xspeed, yspeed, frames, left, right, shooting, (float) projectileAngle);
 			oldStates.add(oldState);
 			while(oldStates.size() > 90){//1.5 seconds of old state data
 				oldStates.remove(0);
 			}
 		}
-		shooting = false;
 	}
 	
 	public void render(Splats splats, double delta){

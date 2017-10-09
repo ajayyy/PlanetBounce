@@ -145,7 +145,7 @@ int id;
 //		System.out.println("X: " + x + " Y: " + y + " DELTA: " + delta);
 		
 		//save old states
-		oldStates.add(new OldState(x, y, xspeed, yspeed, frames, left, right, false));
+//		oldStates.add(new OldState(x, y, xspeed, yspeed, frames, left, right, false));
 		if(oldStates.size() > 200) oldStates.remove(0);
 		
 		frames++;

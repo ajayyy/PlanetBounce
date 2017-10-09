@@ -564,7 +564,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //				if (!isInBetween(x, beforeState.x, afterState.x) || !isInBetween(y, beforeState.y, afterState.y)
 //						|| !isInBetween(xspeed, beforeState.xspeed, afterState.xspeed)
 //						|| !isInBetween(yspeed, beforeState.yspeed, afterState.yspeed)) {
-				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false, false);
+				OldState currentState = new OldState(x, y, xspeed, yspeed, -1, false, false, false, 0);
 				if(isStateInBetween(currentState, beforeState, originalState) && isStateInBetween(currentState, originalState, afterState) &&
 						isStateInBetween(currentState, beforeState, afterState)){//TODO TEST THIS AND IMPLEMENT IT EVERYWHERE ELSE TOO
 
