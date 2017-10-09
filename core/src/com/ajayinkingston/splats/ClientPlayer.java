@@ -292,8 +292,9 @@ public class ClientPlayer extends Entity{
 			}
 			uncheckedMovements++;
 			moved = true;
-			xspeed -= Math.cos(projectileangle) * 250;
-			yspeed -= Math.sin(projectileangle) * 250;
+			projectileangle = (float) projectileangle;
+			xspeed -= Math.cos(projectileangle) * 250f;
+			yspeed -= Math.sin(projectileangle) * 250f;
 			splats.projectilelast = System.currentTimeMillis();
 		}
 		
