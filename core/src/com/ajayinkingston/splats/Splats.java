@@ -120,10 +120,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 	@Override
 	public void render() {
-//		if (Gdx.graphics.getRawDeltaTime() > 0.1) {
-//			Gdx.graphics.setTitle("UNDER 10 FPS");
-//			return;
-//		}
 		if (planets.length < 1)
 			return;
 		// messenger.sendMessage(clientplayer.x + " " + clientplayer.y + " " +
@@ -330,10 +326,22 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	    player2.xspeed = player2xspeed;
 	    player2.yspeed = player2yspeed;
 	    
-	    player1.x += player1xspeed * Gdx.graphics.getRawDeltaTime();
-	    player1.y += player1yspeed * Gdx.graphics.getRawDeltaTime();
-	    player2.x += player2xspeed * Gdx.graphics.getRawDeltaTime();
-	    player2.y += player2yspeed * Gdx.graphics.getRawDeltaTime();
+	    player1.x += player1xspeed * 1/fps;
+	    player1.y += player1yspeed * 1/fps;
+	    player2.x += player2xspeed * 1/fps;
+	    player2.y += player2yspeed * 1/fps;
+	    
+//	    if(player1 instanceof Projectile){
+//			Position projectile1 = new Position(player1.x,player1.y,player1.getRadius());
+//	    	if(( player2).collided(projectile1)){
+//	    		projectiles.remove(player1);
+//	    	}
+//	    }else if(player2 instanceof Projectile){
+//			Position projectile1 = new Position(player2.x,player2.y,player2.getRadius());
+//	    	if(( player1).collided(projectile1)){
+//	    		projectiles.remove(player2);
+//	    	}
+//	    }
 	}
 
 	@Override
