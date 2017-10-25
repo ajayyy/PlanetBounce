@@ -2,6 +2,11 @@ package com.ajayinkingston.splats;
 
 import java.util.ArrayList;
 
+import com.ajayinkingston.planets.server.Entity;
+import com.ajayinkingston.planets.server.Main;
+import com.ajayinkingston.planets.server.OldState;
+import com.ajayinkingston.planets.server.Planet;
+
 public class Test extends Entity{
 int id;
 	
@@ -51,7 +56,7 @@ int id;
 		}
 		
 		//gravity
-		ArrayList<Planet> closestplanets = main.getClosestPlanets(this);
+		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, main.planets);
 		float gravityx = 0;
 		float gravityy = 0;
 		for(Planet planet: closestplanets){
@@ -69,8 +74,8 @@ int id;
 //		}
 		
 		//bouncing
-		Planet planet = main.getClosestPlanet(this);
-		if(main.isTouchingPlanet(this, planet)){
+		Planet planet = Main.getClosestPlanet(this, main.planets);
+		if(Main.isTouchingPlanet(this, planet)){
 			System.out.println(frames + " frame bounced at");
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
 			
@@ -109,8 +114,8 @@ int id;
 		
 		//movement
 		if(right){
-			xspeed += Math.cos(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed += Math.sin(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			xspeed += Math.cos(Main.getClosestAngle(this, main.planets)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed += Math.sin(Main.getClosestAngle(this, main.planets)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 			
 //			System.out.println(frames + " MOVED BY X " + (Math.cos(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta) + " MOVED BY Y " + Math.sin(main.getClosestAngle(this)+1.5708)*main.speed * delta + " AT ANGLE " + main.getClosestAngle(this) + " X " + x + " Y " + y);
 			
@@ -122,8 +127,8 @@ int id;
 //			}
 		}
 		if(left){
-			xspeed += Math.cos(main.getClosestAngle(this)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed += Math.sin(main.getClosestAngle(this)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			xspeed += Math.cos(Main.getClosestAngle(this, main.planets)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed += Math.sin(Main.getClosestAngle(this, main.planets)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 
 //			x+=Math.cos(-Math.PI) * 500*delta;
 //			y+=Math.sin(-Math.PI) * 500*delta;

@@ -2,10 +2,11 @@ package com.ajayinkingston.splats;
 
 import java.util.ArrayList;
 
+import com.ajayinkingston.planets.server.Entity;
+import com.ajayinkingston.planets.server.Main;
+import com.ajayinkingston.planets.server.Planet;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
 
@@ -40,7 +41,7 @@ public class Projectile extends Entity{
 	}
 	
 	public void update(Splats splats, double delta){
-		ArrayList<Planet> closestplanets = splats.getClosestPlanets(this);
+		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, splats.planets);
 		float gravityx = 0;
 		float gravityy = 0;
 		for(Planet planet:closestplanets){
@@ -69,11 +70,4 @@ public class Projectile extends Entity{
 		distance += Math.abs(xspeed*delta) + Math.abs(yspeed*delta);
 	}
 	
-	public float getRadius(){
-		return radius;
-	}
-	
-	public int getSize(){
-		return radius * 2;
-	}
 }

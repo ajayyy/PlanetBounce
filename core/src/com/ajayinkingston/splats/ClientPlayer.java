@@ -3,12 +3,15 @@ package com.ajayinkingston.splats;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.ajayinkingston.planets.server.Main;
+import com.ajayinkingston.planets.server.OldState;
+import com.ajayinkingston.planets.server.Planet;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 
-public class ClientPlayer extends Entity{
+public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	Random rand = new Random();
 	
 	double rotation = -1000000000; //might be needed for camera rotations
@@ -50,15 +53,13 @@ public class ClientPlayer extends Entity{
 	
 //	final float xspeed,yspeed;
 	
-	public ClientPlayer(Splats splats){
-		y = 800;
+	public ClientPlayer(int id, float x, float y, int mass, Splats splats){
+		super(id, x, y, mass);
 		
-		mass = startmass;
+		this.mass = startmass;
 		
 		start = System.currentTimeMillis(); //incase somehow onconnect is not called
 		
-//		splats.cam.rotate(0);
-
 		imagenum = rand.nextInt(splats.playerImages.length);
 	}
 	
@@ -139,8 +140,8 @@ public class ClientPlayer extends Entity{
 		}
 		
 		//gravity
-		ArrayList<Planet> closestplanets = splats.getClosestPlanets(this);
-		Planet closest = splats.getClosestPlanet(this);
+		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, splats.planets);
+		Planet closest = Main.getClosestPlanet(this, splats.planets);
 		float gravityx = 0;
 		float gravityy = 0;
 		for(Planet planet: closestplanets){
@@ -152,8 +153,8 @@ public class ClientPlayer extends Entity{
 		}
 		
 		//bouncing
-		Planet planet = splats.getClosestPlanet(this);
-		if(splats.isTouchingPlanet(this, planet)){
+		Planet planet = Main.getClosestPlanet(this, splats.planets);
+		if(Main.isTouchingPlanet(this, planet)){
 			System.out.println(frames + " frame bounced at");
 //			System.out.println("COLLIDING");
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
@@ -184,8 +185,8 @@ public class ClientPlayer extends Entity{
 		if((Gdx.input.isKeyPressed(Input.Keys.D) && !simulation) || (simulation && this.right)){
 			shot = true;
 			
-			xspeed += Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed += Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			xspeed += Math.cos(Main.getClosestAngle(this, splats.planets)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed += Math.sin(Main.getClosestAngle(this, splats.planets)+1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 //			System.out.println(frames + " MOVED BY X " + (Math.cos(splats.getClosestAngle(this)+1.5708)*speed * delta) + " MOVED BY Y " + Math.sin(splats.getClosestAngle(this)+1.5708)*speed * delta + " AT ANGLE " + splats.getClosestAngle(this) + " X " + x + " Y " + y);
 			
 //			x+=Math.cos(0) * 500*delta;
@@ -210,8 +211,8 @@ public class ClientPlayer extends Entity{
 		}
 		
 		if((Gdx.input.isKeyPressed(Input.Keys.A) && !simulation) || (simulation && this.left)){
-			xspeed += Math.cos(splats.getClosestAngle(this)-1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed += Math.sin(splats.getClosestAngle(this)-1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			xspeed += Math.cos(Main.getClosestAngle(this, splats.planets)-1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+			yspeed += Math.sin(Main.getClosestAngle(this, splats.planets)-1.5708)*speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
 			
 //			x+=Math.cos(-Math.PI) * 500*delta;
 //			y+=Math.sin(-Math.PI) * 500*delta;
@@ -310,7 +311,7 @@ public class ClientPlayer extends Entity{
 				}
 			}
 			float lerp2 = 1.2f;
-			double closestangle = splats.getClosestAngle(this);
+			double closestangle = Main.getClosestAngle(this, splats.planets);
 			if(rotation==-1000000000){
 				rotation = closestangle;
 				splats.cam.rotate((float) Math.toDegrees(closestangle));
