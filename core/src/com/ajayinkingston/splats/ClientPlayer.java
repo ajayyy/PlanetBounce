@@ -71,73 +71,37 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		splats.batch.end();
 	}
 	
+	public void checkInput(Splats splats){
+		System.out.println(frames + " frames have passed for clientplayer");
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.D)){
+			right = true;
+		}else{
+			right = false;
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.A)){
+			left = true;
+		}else{
+			left = false;
+		}
+		
+		if(Gdx.input.isTouched() && System.currentTimeMillis() - splats.projectilelast >= 0.25 * 1000){
+			shoot(0, splats.projectiles);
+		}
+	}
+	
 	public void update(final Splats splats, double delta, boolean simulation){
+		
+//		boolean success = splats.messenger.sendMessage("1 " + (frames));//easily hackable (maybe change?)
+//		splats.messenger.sendMessage("d1 " + (frames));//easily hackable (maybe change?)
+		
 		frames++;
 		
 		boolean shot = false;
 		
-//		if(frames > 60){
-//			left = true;
-//			simulation = true;
-//		}
-////		if(frames > 150){
-////			right = false;
-////			simulation = false;
-////		}
-////		if(frames > 200){
-////			left = true;
-////			simulation = true;
-////		}
-////		if(frames > 250){
-////			left = false;
-////			simulation = false;
-////		}
-////		if(frames > 300){
-////			right = true;	
-////			simulation = true;
-////		}
-//		if(frames > 350){
-//			left = false;
-//			simulation = false;
-//		}
-//		if(frames > 500){
-//			right = true;
-//			simulation = true;
-//		}
-//		if(frames > 650){
-//			right = false;
-//			simulation = false;
-//		}
-		
-		System.out.println(frames + " frames have passed for clientplayer");
 //		start = 0;
 		boolean moved = false;
-		if(!simulation){
-			float x = this.x;
-			float y = this.y;
-			if(transformationPlayerPercent >= 0){
-				x = transformationPlayer.x + (x - transformationPlayer.x) * (transformationPlayerPercent/100f);
-				y = transformationPlayer.y + (y - transformationPlayer.y) * (transformationPlayerPercent/100f);
-				transformationPlayerPercent += 200*delta;
-				if(transformationPlayerPercent >= 100){
-					transformationPlayerPercent = -1;
-					transformationPlayer = null;
-					x = this.x;
-					y = this.y;
-				}
-			}
-			
-			if(massChangeAni){
-				float distance = (aniStartMass + aniMassChange) - getSize();
-				float speed = (aniMassChange - distance) * 1;
-				mass += 150*delta;
-				if(mass - aniStartMass >= aniMassChange){
-					mass = aniStartMass + aniMassChange;
-					massChangeAni = false;
-					aniMass = 0;
-				}
-			}
-		}
 		
 		//gravity
 		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, splats.planets);
@@ -249,25 +213,6 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 			transformationPlayer.left = left;
 			transformationPlayer.right = right;
 			transformationPlayer.update(splats, delta, false);
-		}
-		
-		if(!simulation){
-			float x = this.x;
-			float y = this.y;
-			if(transformationPlayerPercent >= 0){
-				x = transformationPlayer.x + (x - transformationPlayer.x) * (transformationPlayerPercent/100f);
-				y = transformationPlayer.y + (y - transformationPlayer.y) * (transformationPlayerPercent/100f);
-				transformationPlayerPercent += 300*delta;
-				if(transformationPlayerPercent >= 100){
-					transformationPlayerPercent = -1;
-					transformationPlayer = null;
-					x = this.x;
-					y = this.y;
-				}
-			}
-			float lerp = 2.5f;
-			splats.cam.position.x += (((x* splats.batch.scaleFactor) - splats.cam.position.x) * lerp * delta) ;
-			splats.cam.position.y += (((y* splats.batch.scaleFactor) - splats.cam.position.y) * lerp * delta) ;
 		}
 		
 		if(Gdx.input.isTouched() && System.currentTimeMillis() - splats.projectilelast >= 0.25 * 1000){

@@ -2,7 +2,6 @@ package com.ajayinkingston.splats;
 
 import java.util.ArrayList;
 
-import com.ajayinkingston.planets.server.Entity;
 import com.ajayinkingston.planets.server.Main;
 import com.ajayinkingston.planets.server.Planet;
 import com.badlogic.gdx.Gdx;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
 
-public class Projectile extends Entity{
+public class Projectile extends com.ajayinkingston.planets.server.Projectile{
 	double distance;
 	
 	long start;
@@ -18,15 +17,7 @@ public class Projectile extends Entity{
 	int radius;
 	
 	public Projectile(double x, double y, int radius, double angle, float speed){
-		this.x = (float) x;
-		this.y = (float) y;
-		this.radius = radius;
-		this.xspeed = (float) (Math.cos(angle) * speed);
-		this.yspeed = (float) (Math.sin(angle) * speed);
-		
-		friction = 150;
-		
-		start = System.currentTimeMillis();
+		super(x, y, radius, angle, speed);
 	}
 	
 	public void render(Splats splats){

@@ -182,8 +182,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			planets[i].render(this);
 		}
 		
-		for (Projectile projectile : new ArrayList<>(projectiles)) {
-			projectile.render(this);
+		for (com.ajayinkingston.planets.server.Projectile projectile : new ArrayList<>(projectiles)) {
+			((Projectile) projectile).render(this);
 		}
 //		double fulldelta = delta + leftoverdelta;
 //		for(double i=fulldelta;i>=1/fps;i-=1/fps){
