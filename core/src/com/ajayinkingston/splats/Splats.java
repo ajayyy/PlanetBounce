@@ -3,9 +3,13 @@ package com.ajayinkingston.splats;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.ajayinkingston.planets.server.Data;
 import com.ajayinkingston.planets.server.Entity;
 import com.ajayinkingston.planets.server.Main;
 import com.ajayinkingston.planets.server.OldState;
+import com.ajayinkingston.planets.server.Planet;
+import com.ajayinkingston.planets.server.Player;
+import com.ajayinkingston.planets.server.Projectile;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -35,24 +39,13 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	ClientPlayer clientplayer;
 	boolean start;//starts false and when the server tells us it has started, this becomes true, to know when to start calculating
 
-	ArrayList<Player> players = new ArrayList<>();
-
 	Arrow arrow;
 
 	float xspeed, yspeed;
-
-	// TODO: OBJECTIVE: MAKE SINGLEPLAYER GAME AND THEN TURN MULTIPLAYER (EASIER FOR TESTING)
-
-	Planet[] planets = new Planet[0];
-
-	ArrayList<Projectile> projectiles = new ArrayList<>();// TODO: MAKE THEM DESPAWN
-
-	long projectilelast;
-	int projectilesize = 5;
-	float projectileSpeedChange = 250;
-	float projectileSpeed = 1000;
-
+	
 	int mapsize = 30000;
+	
+	long projectilelast;
 	
 	double leftoverdelta; //delta left over after the 40fps
 	double fps = 40;//fps to update at
@@ -62,6 +55,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	Test test;
 	
 	long testing;
+	
+	Data data; //class thats stores everything (so that it can be the same on the sever and client)
+	
+	//ALWAYS USE CLIENT VERSION OF CLASSES IF POSSIBLE (it is a requirement when making a new instance of a class)
 	
 //	Texture grid;
 
@@ -98,8 +95,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
 //		cam.position.x -= cam.viewportWidth / 2f;
 //		cam.position.y -= cam.viewportHeight / 2f;
-		cam.rotate(90);
-		cam.update();
+//		cam.rotate(90);
+//		cam.update();
 		
 //		test = new Test(this);
 		test = new Test(0, 0, 800, 0);
@@ -109,8 +106,11 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		messenger = new WebSocketClientMessenger("ajay.ddns.net", 2492, device, this);
 		messenger = new WebSocketClientMessenger("localhost", 2492, device, this);
 		
+		System.out.println("ASdsadasd");
+		
 		clientplayer = new ClientPlayer(messenger.getId(), 0, 800, 0, this);//defaults to startmass right now
 		
+		data = new Data();
 	}
 	
 	@Override
@@ -123,10 +123,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 	@Override
 	public void render() {
-		if (planets.length < 1)
+		if (data.planets.length < 1)
 			return;
 		// messenger.sendMessage(clientplayer.x + " " + clientplayer.y + " " +
-		// clientplayer.xspeed + " " + clientplayer.yspeed);
+		// clientplayer.xspeed + " " + clientplayer.7yspeed);
 		
 		System.out.println(clientplayer.start);
 
@@ -149,12 +149,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		batch.draw(img, 0, 0);
 		batch.end();
 		
-		for (int i = 0; i < planets.length; i++) {
-			planets[i].renderGlow(this);
+		for (int i = 0; i < data.planets.length; i++) {
+			((com.ajayinkingston.splats.Planet) data.planets[i]).renderGlow(this);
 		}
 //		System.out.println(planets[0].radius);
 //		planets[0] = new Planet(0, 0, 25, 2);
-//		for(int i=1;i<planets.length;i++){
+//		for(int i=1;i<data.planets.length;i++){
 //			planets[i] = new Planet(55555,555555,100, 2);
 //		}
 //		clientplayer.mass = 120;
@@ -165,25 +165,25 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		shapeRenderer.scaleFactor = 0.25f;
 //		batch.scaleFactor = 0.25f;
 //		System.out.println(((Math.sqrt(Math.pow(Math.abs((clientplayer.y) - (planets[0].y)), 2) + Math.pow(Math.abs((clientplayer.x) - (planets[0].x)), 2))) - clientplayer.size/2 - planets[0].radius) / planets[0].radius);
-//		players.get(0).x = 0;
-//		players.get(0).y = 600;
-//		players.get(0).yspeed = 0;
-//		players.get(0).xspeed = 0;
+//		data.players.get(0).x = 0;
+//		data.players.get(0).y = 600;
+//		data.players.get(0).yspeed = 0;
+//		data.players.get(0).xspeed = 0;
 
 		double delta = Gdx.graphics.getRawDeltaTime();
 		
 		clientplayer.render(this);
 		
-		for (Player player : new ArrayList<Player>(players)) {
-			player.render(this, delta);
+		for (Player player : new ArrayList<Player>(data.players)) {
+			((com.ajayinkingston.splats.Player) player).render(this, delta);
 		}
 
-		for (int i = 0; i < planets.length; i++) {
-			planets[i].render(this);
+		for (int i = 0; i < data.planets.length; i++) {
+			((com.ajayinkingston.splats.Planet) data.planets[i]).render(this);
 		}
 		
-		for (com.ajayinkingston.planets.server.Projectile projectile : new ArrayList<>(projectiles)) {
-			((Projectile) projectile).render(this);
+		for (Projectile projectile : new ArrayList<>(data.projectiles)) {
+			((com.ajayinkingston.splats.ClientProjectile) projectile).render(this);
 		}
 //		double fulldelta = delta + leftoverdelta;
 //		for(double i=fulldelta;i>=1/fps;i-=1/fps){
@@ -210,7 +210,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			for(double i=fulldelta;i>=1/fps;i-=1/fps){
 				update(1/fps);
 			}
-			if(update.includeLeftoverDelta) leftoverdelta = fulldelta%(1/fps);
+			if(update.includeLeftoverDelta) leftoverdelta = fulldelta % (1/fps);
 			futureUpdates.remove(update);
 			loops++;
 		}
@@ -218,14 +218,19 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	}
 	
 	public void update(double delta) {
-		for (Projectile projectile : new ArrayList<>(projectiles)) {
-			projectile.update(this, delta);
-			if(System.currentTimeMillis() - projectile.start > 4500 || Main.isTouchingPlanet(projectile, Main.getClosestPlanet(projectile, planets))){
-				projectiles.remove(projectile);
+		
+		//make sure these local variables are updated with the real ones
+		
+		for (Projectile projectile : new ArrayList<>(data.projectiles)) {
+			projectile.update(data, delta);
+			if(System.currentTimeMillis() - projectile.start > 4500 || Main.isTouchingPlanet(projectile, Main.getClosestPlanet(projectile, data.planets))){
+				data.projectiles.remove(projectile);
 			}
 		}
 		
-		clientplayer.update(this, delta, false);
+		clientplayer.checkInput(this, data);
+		clientplayer.update(data, delta);
+		clientplayer.postUpdate(this, data);
 		
 //		test.x = clientplayer.x;
 //		test.y = clientplayer.y;
@@ -233,35 +238,35 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		test.yspeed = clientplayer.yspeed;
 //		test.mass = clientplayer.mass;
 		
-//		if(players.size()==1){
-//			players.add(new Player(3, 0, clientplayer.mass, this));
-//			players.get(1).x = test.x;
-//			players.get(1).y = test.y;
-//			players.get(1).xspeed = test.xspeed;
-//			players.get(1).yspeed = test.yspeed;
+//		if(data.players.size()==1){
+//			data.players.add(new Player(3, 0, clientplayer.mass, this));
+//			data.players.get(1).x = test.x;
+//			data.players.get(1).y = test.y;
+//			data.players.get(1).xspeed = test.xspeed;
+//			data.players.get(1).yspeed = test.yspeed;
 //			
-////			players.add(new Player(4, 0, clientplayer.mass, this));
-////			players.get(1).x = test.x;
-////			players.get(1).y = test.y;
-////			players.get(1).xspeed = test.xspeed;
-////			players.get(1).yspeed = test.yspeed;
+////			data.players.add(new Player(4, 0, clientplayer.mass, this));
+////			data.players.get(1).x = test.x;
+////			data.players.get(1).y = test.y;
+////			data.players.get(1).xspeed = test.xspeed;
+////			data.players.get(1).yspeed = test.yspeed;
 //
 //		}
 //		
-//		players.get(0).x = test.x;
-//		players.get(0).y = test.y;
-//		players.get(0).yspeed = test.yspeed;
-//		players.get(0).xspeed = test.xspeed;
+//		data.players.get(0).x = test.x;
+//		data.players.get(0).y = test.y;
+//		data.players.get(0).yspeed = test.yspeed;
+//		data.players.get(0).xspeed = test.xspeed;
 		
-//		players.get(1).x = test.x;
-//		players.get(1).y = test.y;
-//		players.get(1).yspeed = test.yspeed;
-//		players.get(1).xspeed = test.xspeed;
+//		data.players.get(1).x = test.x;
+//		data.players.get(1).y = test.y;
+//		data.players.get(1).yspeed = test.yspeed;
+//		data.players.get(1).xspeed = test.xspeed;
 		
-//		test.x = players.get(0).x;
-//		test.y = players.get(0).y;
-//		test.yspeed = players.get(0).yspeed;
-//		test.xspeed = players.get(0).xspeed;
+//		test.x = data.players.get(0).x;
+//		test.y = data.players.get(0).y;
+//		test.yspeed = data.players.get(0).yspeed;
+//		test.xspeed = data.players.get(0).xspeed;
 //		
 //		clientplayer.x = test.x;
 //		clientplayer.y = test.y;
@@ -272,34 +277,34 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		test.update(this, delta);
 //		test.update(this, 1/fps, false);
 		
-		for (Player player : new ArrayList<Player>(players)) {
-			player.update(this, 1/fps, false);
+		for (Player player : new ArrayList<Player>(data.players)) {
+			player.update(data, 1/fps);
 		}
 		
 		//collision detection
 //		Position position = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
-//		for(Player player2: players){//for clientplayer to player
+//		for(Player player2: data.players){//for clientplayer to player
 //			if(player2.collided(position)){
 //				//collided with player
-//				affectColidedPlayers(clientplayer, player2);
+//				affectColideddata.players(clientplayer, player2);
 //			}
 //		}
-//		for(int i=0;i<players.size();i++){//for player to player
-//			Position player1 = new Position(players.get(i).x, players.get(i).y, players.get(i).getRadius());
-//			for(int s=i+1;s<players.size();s++){
-//				if(players.get(s).collided(player1)){
+//		for(int i=0;i<data.players.size();i++){//for player to player
+//			Position player1 = new Position(data.players.get(i).x, data.players.get(i).y, data.players.get(i).getRadius());
+//			for(int s=i+1;s<data.players.size();s++){
+//				if(data.players.get(s).collided(player1)){
 //					//collided with player
-//					affectColidedPlayers(players.get(i),players.get(s));
+//					affectColideddata.players(data.players.get(i),data.players.get(s));
 //				}
 //			}
 //		}
 		
 		//projectile collision detection
-		for(Projectile projectile: new ArrayList<>(projectiles)){
-//			for(Player player: players){
+		for(Projectile projectile: new ArrayList<>(data.projectiles)){
+//			for(Player player: data.players){
 //				Position projectile1 = new Position(projectile.x,projectile.y,projectile.radius);
 //				if(player.collided(projectile1)){
-//					affectColidedPlayers(player, projectile);
+//					affectColideddata.players(player, projectile);
 //				}
 //			}
 			if(projectile.collided(clientplayer)){
@@ -310,7 +315,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 	}
 	
-	public void affectColidedPlayers(Entity player1, Entity player2){ //once the players are collided, this function will deal with them
+	public void affectColidedPlayers(Entity player1, Entity player2){ //once the data.players are collided, this function will deal with them
 	    //Calculate speeds
 //	    float player1xspeed = (player1.xspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player2.xspeed)) / (clientplayer.startmass +clientplayer.startmass);
 //	    float player1yspeed = (player1.yspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player2.yspeed)) / (clientplayer.startmass + clientplayer.startmass);
@@ -355,28 +360,29 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	@Override
 	public void onMessageRecieved(String message) {
 		if (message.startsWith("CONNECTED")) {
-//			System.out.println("sdsdsadsda");
-			Player player = new Player(Integer.parseInt(message.split(" ")[1]), Integer.parseInt(message.split(" ")[6]), this);
+
+			Player player = new com.ajayinkingston.splats.Player(Integer.parseInt(message.split(" ")[1]), Integer.parseInt(message.split(" ")[6]), this);
 			player.x = Float.parseFloat(message.split(" ")[2]);
 			player.y = Float.parseFloat(message.split(" ")[3]);
 			player.xspeed = Float.parseFloat(message.split(" ")[4]);
 			player.yspeed = Float.parseFloat(message.split(" ")[5]);
 
-			players.add(player);
+			data.players.add(player);
 		} else if (message.startsWith("DISCONNECTED")) {
-			players.remove(getPlayer(Integer.parseInt(message.split(" ")[1])));
+			data.players.remove(getPlayer(Integer.parseInt(message.split(" ")[1])));
 		} else if (message.startsWith("PLANET")) {
-			Planet[] planetslist = new Planet[planets.length + 1];
-			for (int i = 0; i < planets.length; i++) {
-				planetslist[i] = planets[i];
+			System.out.println("recieved data for a planet");
+			Planet[] planetslist = new Planet[data.planets.length + 1];
+			for (int i = 0; i < data.planets.length; i++) {
+				planetslist[i] = data.planets[i];
 			}
-			planetslist[planets.length] = new Planet(Float.parseFloat(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]));
-			planetslist[planets.length].setupFood(Integer.parseInt(message.split(" ")[4]));
-			planets = planetslist;
+			planetslist[data.planets.length] = new com.ajayinkingston.splats.Planet(Float.parseFloat(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]));
+			((com.ajayinkingston.splats.Planet) planetslist[data.planets.length]).setupFood(Integer.parseInt(message.split(" ")[4]));
+			data.planets = planetslist;
 		}else if(message.startsWith("FOOD")){
 			String[] messageSplit = message.split(" ");
 			
-			Planet planet = planets[Integer.parseInt(messageSplit[1])];
+			Planet planet = data.planets[Integer.parseInt(messageSplit[1])];
 			
 			planet.food[Integer.parseInt(messageSplit[2])] = new Food(Boolean.parseBoolean(message.split(" ")[3]), Float.parseFloat(message.split(" ")[4]), Integer.parseInt(message.split(" ")[5]), random.nextInt(pointImages.length));
 			
@@ -431,20 +437,20 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //					aheadUpdates = (currentFrame + futureUpdates.size() - aheadUpdates) - frame;
 //				}
 				
-				if(players.isEmpty()){
-					players.add(new Player(3, clientplayer.mass, this));
-					players.get(0).x = clientplayer.x;
-					players.get(0).y = clientplayer.y;
-					players.get(0).xspeed = clientplayer.xspeed;
-					players.get(0).yspeed = clientplayer.yspeed;
+				if(data.players.isEmpty()){
+					data.players.add(new com.ajayinkingston.splats.Player(3, clientplayer.mass, this));
+					data.players.get(0).x = clientplayer.x;
+					data.players.get(0).y = clientplayer.y;
+					data.players.get(0).xspeed = clientplayer.xspeed;
+					data.players.get(0).yspeed = clientplayer.yspeed;
 
 				}
 				
-				players.get(0).x = x;
-				players.get(0).y = y;
-				players.get(0).yspeed = yspeed;
-				players.get(0).xspeed = xspeed;
-				players.get(0).mass = clientplayer.mass;
+				data.players.get(0).x = x;
+				data.players.get(0).y = y;
+				data.players.get(0).yspeed = yspeed;
+				data.players.get(0).xspeed = xspeed;
+				data.players.get(0).mass = clientplayer.mass;
 				
 //				testing = System.currentTimeMillis();
 				
@@ -460,10 +466,10 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //				test.yspeed = yspeed;
 //				test.xspeed = xspeed;
 //				
-//				players.get(0).x = clientplayer.xy;
-//				players.get(0).y = clientplayer.y;
-//				players.get(0).yspeed = clientplayer.yspeed;
-//				players.get(0).xspeed = clientplaer.xspeed;
+//				data.players.get(0).x = clientplayer.xy;
+//				data.players.get(0).y = clientplayer.y;
+//				data.players.get(0).yspeed = clientplayer.yspeed;
+//				data.players.get(0).xspeed = clientplaer.xspeed;
 				
 //				if(clientplayer.frames < 50){
 //					clientplayer.x = x;
@@ -755,15 +761,15 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 					player.right = oldOldStates.get(i).right;
 				}
 				if(oldOldStates.get(i).shot){
-					player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
-					player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * projectileSpeedChange);
+					player.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileAngle) * Data.projectileSpeedChange);
+					player.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileAngle) * Data.projectileSpeedChange);
 				}
 				
 				double delta = 1/60.0;
 //				if(i!=0){
 //					delta = (oldOldStates.get(i).when - oldOldStates.get(i-1).when) / 1000d;
 //				}
-				player.update(this, delta, true);
+				player.update(data, delta);
 			}
 			
 //			if (!disable) {// ignore delta for now when disable true
@@ -783,6 +789,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 	@Override
 	public void onConnect(long time) {
+		System.out.println("Connected!");
 		clientplayer.start = time;
 	}
 
@@ -795,7 +802,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	}
 	
 	public Player getPlayer(int id) {
-		for (Player player : players) {
+		for (Player player : data.players) {
 			if (player.id == id) {
 				return player;
 			}

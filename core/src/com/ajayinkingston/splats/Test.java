@@ -56,16 +56,16 @@ int id;
 		}
 		
 		//gravity
-		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, main.planets);
+//		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, main.planets);
 		float gravityx = 0;
 		float gravityy = 0;
-		for(Planet planet: closestplanets){
-//			System.out.println((player == null) + " " + (planet == null));
-			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
-			
-			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
-			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
-		}
+//		for(Planet planet: closestplanets){
+////			System.out.println((player == null) + " " + (planet == null));
+//			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
+//			
+//			gravityx += Math.cos(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;//XXX: IF YOU CHANGE THIS CHANGE IT IN PLANET CLASS AND SERVER PROJECT TOO
+//			gravityy += Math.sin(angle) * planet.gravityhelperconstant / ((Math.sqrt(Math.pow((y) - (planet.y), 2) + Math.pow((x) - (planet.x), 2))) - getRadius() - planet.radius + 300) * 350;
+//		}
 		
 //		if(System.currentTimeMillis() - lastChecked >= 1000){//1 seconds since last checked?
 //		if(true){
@@ -74,26 +74,26 @@ int id;
 //		}
 		
 		//bouncing
-		Planet planet = Main.getClosestPlanet(this, main.planets);
-		if(Main.isTouchingPlanet(this, planet)){
-			System.out.println(frames + " frame bounced at");
-			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
-			
-			double ux = 2 * (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle))) * Math.cos(angle);
-			double wx = xspeed - ux;
-			double uy = 2 * (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle))) * Math.sin(angle);
-			double wy = yspeed - uy;
-			xspeed = (float) (wx - ux);
-			yspeed = (float) (wy - uy);
-			double finalangle = Math.atan2(yspeed, xspeed);
-			xspeed = (float) (Math.cos(finalangle) * planet.bounceheight);
-			yspeed = (float) (Math.sin(finalangle) * planet.bounceheight);
-			
-			double newx = planet.x + planet.radius * ((x - planet.x) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
-			double newy = planet.y + planet.radius * ((y - planet.y) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
-			x = (float) (newx + Math.cos(angle) * (getRadius()+2));
-			y = (float) (newy + Math.sin(angle) * (getRadius()+2));
-		}
+//		Planet planet = Main.getClosestPlanet(this, main.planets);
+//		if(Main.isTouchingPlanet(this, planet)){
+//			System.out.println(frames + " frame bounced at");
+//			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
+//			
+//			double ux = 2 * (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle))) * Math.cos(angle);
+//			double wx = xspeed - ux;
+//			double uy = 2 * (getDotProduct(xspeed, yspeed, Math.cos(angle), Math.sin(angle))) * Math.sin(angle);
+//			double wy = yspeed - uy;
+//			xspeed = (float) (wx - ux);
+//			yspeed = (float) (wy - uy);
+//			double finalangle = Math.atan2(yspeed, xspeed);
+//			xspeed = (float) (Math.cos(finalangle) * planet.bounceheight);
+//			yspeed = (float) (Math.sin(finalangle) * planet.bounceheight);
+//			
+//			double newx = planet.x + planet.radius * ((x - planet.x) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
+//			double newy = planet.y + planet.radius * ((y - planet.y) / Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)));
+//			x = (float) (newx + Math.cos(angle) * (getRadius()+2));
+//			y = (float) (newy + Math.sin(angle) * (getRadius()+2));
+//		}
 		
 //		for(int i=0;i<planet.food.length;i++){
 //			Food food = planet.food[i];
@@ -113,26 +113,26 @@ int id;
 		yspeed += gravityy*delta;
 		
 		//movement
-		if(right){
-			xspeed += Math.cos(Main.getClosestAngle(this, main.planets)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed += Math.sin(Main.getClosestAngle(this, main.planets)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			
-//			System.out.println(frames + " MOVED BY X " + (Math.cos(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta) + " MOVED BY Y " + Math.sin(main.getClosestAngle(this)+1.5708)*main.speed * delta + " AT ANGLE " + main.getClosestAngle(this) + " X " + x + " Y " + y);
-			
-//			x+=Math.cos(0) * 500*delta;
-//			y+=Math.sin(0) * 500*delta;
-			
-//			if(rightstart == -1){
-//				rightstart = frames;
-//			}
-		}
-		if(left){
-			xspeed += Math.cos(Main.getClosestAngle(this, main.planets)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-			yspeed += Math.sin(Main.getClosestAngle(this, main.planets)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
-
-//			x+=Math.cos(-Math.PI) * 500*delta;
-//			y+=Math.sin(-Math.PI) * 500*delta;
-		}
+//		if(right){
+//			xspeed += Math.cos(Main.getClosestAngle(this, main.planets)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+//			yspeed += Math.sin(Main.getClosestAngle(this, main.planets)+1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+//			
+////			System.out.println(frames + " MOVED BY X " + (Math.cos(main.getClosestAngle(this)+1.5708)*main.clientplayer.speed * delta) + " MOVED BY Y " + Math.sin(main.getClosestAngle(this)+1.5708)*main.speed * delta + " AT ANGLE " + main.getClosestAngle(this) + " X " + x + " Y " + y);
+//			
+////			x+=Math.cos(0) * 500*delta;
+////			y+=Math.sin(0) * 500*delta;
+//			
+////			if(rightstart == -1){
+////				rightstart = frames;
+////			}
+//		}
+//		if(left){
+//			xspeed += Math.cos(Main.getClosestAngle(this, main.planets)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+//			yspeed += Math.sin(Main.getClosestAngle(this, main.planets)-1.5708)*main.clientplayer.speed * delta;//1.5708 is 90 degrees in radians (half pi or quarter tau)
+//
+////			x+=Math.cos(-Math.PI) * 500*delta;
+////			y+=Math.sin(-Math.PI) * 500*delta;
+//		}
 		
 		//friction
 		if(Math.abs(xspeed) < friction*delta) xspeed = 0;

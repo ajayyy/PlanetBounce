@@ -3,10 +3,10 @@ package com.ajayinkingston.splats;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.ajayinkingston.planets.server.Entity;
+import com.ajayinkingston.planets.server.Data;
 import com.ajayinkingston.planets.server.Main;
-import com.ajayinkingston.planets.server.Planet;
 import com.ajayinkingston.planets.server.OldState;
+import com.ajayinkingston.planets.server.Planet;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 
@@ -46,11 +46,11 @@ public class Player extends com.ajayinkingston.planets.server.Player{
 		image = rand.nextInt(splats.playerImages.length);
 	}
 	
-	public void update(Splats splats, double delta, boolean simulation){
+	public void update(Data data, double delta, boolean simulation){
 		frames++;
 
 		//gravity
-		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, splats.planets);
+		ArrayList<Planet> closestplanets = Main.getClosestPlanets(this, data.planets);
 		float gravityx = 0;
 		float gravityy = 0;
 		for(Planet planet: closestplanets){
@@ -62,7 +62,7 @@ public class Player extends com.ajayinkingston.planets.server.Player{
 		}
 		
 		//bouncing
-		Planet planet = Main.getClosestPlanet(this, splats.planets);
+		Planet planet = Main.getClosestPlanet(this, data.planets);
 		if(Main.isTouchingPlanet(this, planet)){
 			System.out.println("COLLIDING");
 			double angle = Math.atan2((y) - (planet.y), (x) - (planet.x));
@@ -89,12 +89,12 @@ public class Player extends com.ajayinkingston.planets.server.Player{
 		
 		//movement
 		if(right){
-			xspeed += Math.cos(Main.getClosestAngle(this, splats.planets)+Math.toRadians(90)) * splats.clientplayer.speed * delta;
-			yspeed += Math.sin(Main.getClosestAngle(this, splats.planets)+Math.toRadians(90)) * splats.clientplayer.speed * delta;
+			xspeed += Math.cos(Main.getClosestAngle(this, data.planets)+Math.toRadians(90)) * data.speed * delta;
+			yspeed += Math.sin(Main.getClosestAngle(this, data.planets)+Math.toRadians(90)) * data.speed * delta;
 		}
 		if(left){
-			xspeed += Math.cos(Main.getClosestAngle(this, splats.planets)+Math.toRadians(-90)) * splats.clientplayer.speed * delta;
-			yspeed += Math.sin(Main.getClosestAngle(this, splats.planets)+Math.toRadians(-90)) * splats.clientplayer.speed * delta;
+			xspeed += Math.cos(Main.getClosestAngle(this, data.planets)+Math.toRadians(-90)) * data.speed * delta;
+			yspeed += Math.sin(Main.getClosestAngle(this, data.planets)+Math.toRadians(-90)) * data.speed * delta;
 		}
 		
 		//friction
@@ -111,10 +111,10 @@ public class Player extends com.ajayinkingston.planets.server.Player{
 		
 		//shooting
 		if(shooting){
-			xspeed -= Math.cos(projectileAngle) * splats.projectileSpeedChange;
-			yspeed -= Math.sin(projectileAngle) * splats.projectileSpeedChange;
+			xspeed -= Math.cos(projectileAngle) * data.projectileSpeedChange;
+			yspeed -= Math.sin(projectileAngle) * data.projectileSpeedChange;
 			if(real){
-				splats.projectiles.add(new Projectile(x + ((getRadius() + 1 + splats.projectilesize/2) * Math.cos(projectileAngle)), y + ((getRadius() + splats.projectilesize/2) * Math.sin(projectileAngle)), splats.projectilesize, projectileAngle, splats.projectileSpeed));
+				data.projectiles.add(new com.ajayinkingston.splats.ClientProjectile(x + ((getRadius() + 1 + data.projectilesize/2) * Math.cos(projectileAngle)), y + ((getRadius() + data.projectilesize/2) * Math.sin(projectileAngle)), data.projectilesize, projectileAngle, data.projectileSpeed));
 				if(transformationPlayerPercent != -1){
 					transformationPlayer.shooting = true;
 					transformationPlayer.projectileAngle = projectileAngle;
@@ -125,7 +125,7 @@ public class Player extends com.ajayinkingston.planets.server.Player{
 		if(transformationPlayerPercent != -1 && real && !simulation){
 			transformationPlayer.left = left;
 			transformationPlayer.right = right;
-			transformationPlayer.update(splats, Gdx.graphics.getDeltaTime(), false);
+			transformationPlayer.update(data, Gdx.graphics.getDeltaTime(), false);
 		}
 		
 //		System.out.println(xspeed + " " + yspeed);
