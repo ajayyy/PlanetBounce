@@ -58,7 +58,7 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		imagenum = rand.nextInt(splats.playerImages.length);
 	}
 	
-	public void render(Splats splats){ //also does camera movement
+	public void render(Splats splats){ //also does camera movement 
 		splats.batch.begin();
 		float factor = 1.3f;
 		splats.batch.draw(splats.shadow, x-getSize()/2*factor, y-getSize()/2*factor, getSize()*factor, getSize()*factor);
