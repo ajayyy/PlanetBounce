@@ -69,8 +69,8 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		float delta = Gdx.graphics.getDeltaTime(); //use gdx.deltatime because this is not physics
 		
 		float lerp = 2.5f;
-		splats.cam.position.x += (((x * splats.batch.scaleFactor) - splats.cam.position.x) * lerp * delta) ;
-		splats.cam.position.y += (((y * splats.batch.scaleFactor) - splats.cam.position.y) * lerp * delta) ;
+		splats.cam.position.x += (((x * splats.batch.scaleFactor) - splats.cam.position.x) * lerp * delta);
+		splats.cam.position.y += (((y * splats.batch.scaleFactor) - splats.cam.position.y) * lerp * delta);
 		
 //		float lerp2 = 1.2f;
 //		double closestangle = Main.getClosestAngle(this, data.planets);
