@@ -71,22 +71,25 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		float lerp = 2.5f;
 		float xmovement = (((x * splats.batch.scaleFactor) - splats.cam.position.x) * lerp * delta);
 		float ymovement = (((y * splats.batch.scaleFactor) - splats.cam.position.y) * lerp * delta);
+//		
+//		if(xmovement > 0 && splats.cam.position.x + xmovement > x * splats.batch.scaleFactor){
+//			splats.cam.position.x = x * splats.batch.scaleFactor;
+//		}
+//		if(xmovement < 0 && splats.cam.position.x + xmovement < x * splats.batch.scaleFactor){
+//			splats.cam.position.x = x * splats.batch.scaleFactor;
+//		}
+//		if(ymovement > 0 && splats.cam.position.y + ymovement > y * splats.batch.scaleFactor){
+//			splats.cam.position.y = y * splats.batch.scaleFactor;
+//		}
+//		if(ymovement < 0 && splats.cam.position.y + ymovement < y * splats.batch.scaleFactor){
+//			splats.cam.position.y = y * splats.batch.scaleFactor;
+//		}
+//		
+//		if(splats.cam.position.x != x * splats.batch.scaleFactor) splats.cam.position.x += xmovement;
+//		if(splats.cam.position.y != y * splats.batch.scaleFactor) splats.cam.position.y += ymovement;
 		
-		if(xmovement > 0 && splats.cam.position.x + xmovement > x * splats.batch.scaleFactor){
-			splats.cam.position.x = x * splats.batch.scaleFactor;
-		}
-		if(xmovement < 0 && splats.cam.position.x + xmovement < x * splats.batch.scaleFactor){
-			splats.cam.position.x = x * splats.batch.scaleFactor;
-		}
-		if(ymovement > 0 && splats.cam.position.y + ymovement > y * splats.batch.scaleFactor){
-			splats.cam.position.y = y * splats.batch.scaleFactor;
-		}
-		if(ymovement < 0 && splats.cam.position.y + ymovement < y * splats.batch.scaleFactor){
-			splats.cam.position.y = y * splats.batch.scaleFactor;
-		}
-		
-		if(splats.cam.position.x != 0) splats.cam.position.x += xmovement;
-		if(splats.cam.position.y != 0) splats.cam.position.y += ymovement;
+		splats.cam.position.x += xmovement;
+		splats.cam.position.y += ymovement;
 		
 		System.out.println(splats.cam.position.x + " asdasdsadsafreb " + x);
 		
