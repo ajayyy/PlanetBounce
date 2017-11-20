@@ -145,20 +145,20 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	}
 	
 	public void postUpdate(Splats splats, Data data){ //sends messages and does the shooting
-		if(right && !serverstateright){
+		if(Gdx.input.isKeyPressed(Input.Keys.D) && !serverstateright){
 			splats.messenger.sendMessage("1 " + (frames));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			serverstateright = true;
-		}else if(!right && serverstateright){
+		}else if(!Gdx.input.isKeyPressed(Input.Keys.D) && serverstateright){
 			splats.messenger.sendMessage("d1 " + (frames));//easily hackable (maybe change?)
 			serverstateright = false;
 		}
 		
-		if(left && !serverstateleft){
+		if(Gdx.input.isKeyPressed(Input.Keys.A) && !serverstateleft){
 			splats.messenger.sendMessage("-1 " + (frames));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			serverstateleft = true;
-		}else if(!left && serverstateleft){
+		}else if(!Gdx.input.isKeyPressed(Input.Keys.A) && serverstateleft){
 			splats.messenger.sendMessage("d-1 " + (frames));//easily hackable (maybe change?)
 			serverstateleft = false;
 		}
