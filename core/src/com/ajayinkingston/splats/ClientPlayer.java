@@ -148,20 +148,20 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		
 		//checks the input and variable to not break the simulation code
 		if(Gdx.input.isKeyPressed(Input.Keys.D) && right && !serverstateright){
-			splats.messenger.sendMessage("1 " + (frames));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("1 " + (frames + 1));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			serverstateright = true;
 		}else if(!Gdx.input.isKeyPressed(Input.Keys.D) && !right && serverstateright){
-			splats.messenger.sendMessage("d1 " + (frames));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("d1 " + (frames + 1));//easily hackable (maybe change?)
 			serverstateright = false;
 		}
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.A) && left && !serverstateleft){
-			splats.messenger.sendMessage("-1 " + (frames));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("-1 " + (frames + 1));//easily hackable (maybe change?)
 			uncheckedMovements++;
 			serverstateleft = true;
 		}else if(!Gdx.input.isKeyPressed(Input.Keys.A) && !left && serverstateleft){
-			splats.messenger.sendMessage("d-1 " + (frames));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("d-1 " + (frames + 1));//easily hackable (maybe change?)
 			serverstateleft = false;
 		}
 		
