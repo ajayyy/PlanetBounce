@@ -157,7 +157,7 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		}
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.A) && left && !serverstateleft){
-			splats.messenger.sendMessage("-1 " + (frames));//easily hackable (maybe change?)
+			splats.messenger.sendMessage("-1 " + (frames));//easily hackable (maybe change?) 
 			uncheckedMovements++;
 			serverstateleft = true;
 		}else if(!Gdx.input.isKeyPressed(Input.Keys.A) && !left && serverstateleft){
