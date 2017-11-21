@@ -19,8 +19,6 @@ public class Player extends com.ajayinkingston.planets.server.Player{
 	boolean shooting;//this frame will be cleared next frame
 	double projectileAngle = 0;
 	
-	long frames = 0;//amount of frames that passed;
-	
 	ArrayList<OldState> oldStates = new ArrayList<>();
 	
 	Player transformationPlayer;
