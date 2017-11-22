@@ -37,8 +37,8 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	int uncheckedMovements = 0;//amount of unchecked movements    //TODO DELETE
 	ArrayList<OldState> uncheckedOldStates = new ArrayList<>();
 	
-	Player transformationPlayer;
-	float transformationPlayerPercent = -1;
+//	Player transformationPlayer;
+//	float transformationPlayerPercent = -1;
 	
 	int imagenum;
 	
