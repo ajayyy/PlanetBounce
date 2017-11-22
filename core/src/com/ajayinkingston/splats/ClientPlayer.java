@@ -1,6 +1,7 @@
 package com.ajayinkingston.splats;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.Random;
 
 import com.ajayinkingston.planets.server.Data;
@@ -49,10 +50,12 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	
 	Shot shot = null; // null if no shot this frame
 	
-	public ClientPlayer(int id, float x, float y, int mass, Splats splats){
+	public ClientPlayer(int id, float x, float y, int mass, int frame, Splats splats){
 		super(id, x, y, mass);
 		
 		this.mass = startmass;
+		
+		this.frames = frame; //start frame is there is any
 		
 		start = System.currentTimeMillis(); //incase somehow onconnect is not called
 		
@@ -95,6 +98,8 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		
 		//move camera
 		float delta = Gdx.graphics.getDeltaTime(); //use gdx.deltatime because this is not physics
+		
+		if(delta > 0.1f) delta = (float) (1/splats.fps); //if it's less than 10 seconds then ignore it
 		
 		float lerp = 2.5f;
 		float xmovement = (((x * splats.batch.scaleFactor) - splats.cam.position.x) * lerp * delta);

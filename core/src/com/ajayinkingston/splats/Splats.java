@@ -109,7 +109,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		System.out.println("ASdsadasd");
 		
-		clientplayer = new ClientPlayer(messenger.getId(), 0, 800, 0, this);//defaults to startmass right now
+		clientplayer = new ClientPlayer(messenger.getId(), 0, 800, 0, 0, this);//defaults to startmass right now
 		
 		data = new Data();
 	}
@@ -518,7 +518,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	public void onMessageRecieved(String message) {
 		if (message.startsWith("CONNECTED")) {
 
-			Player player = new com.ajayinkingston.splats.ClientPlayer(Integer.parseInt(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]), Integer.parseInt(message.split(" ")[6]), this);
+			Player player = new ClientPlayer(Integer.parseInt(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]), Integer.parseInt(message.split(" ")[6]), 0, this);
 			player.xspeed = Float.parseFloat(message.split(" ")[4]);
 			player.yspeed = Float.parseFloat(message.split(" ")[5]);
 
