@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 
 public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
+	
 	Random rand = new Random();
 	
 	double rotation = -1000000000; //might be needed for camera rotations
@@ -65,6 +66,33 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		splats.batch.draw(splats.playerImages[imagenum], x-getSize()/2, y-getSize()/2, getSize(), getSize());
 		splats.batch.end();
 		
+	}
+	
+	public void checkInput(Splats splats, Data data){
+		System.out.println(frames + " frames have passed for clientplayer");
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.D)){
+			right = true;
+		}else{
+			right = false;
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.A)){
+			left = true;
+		}else{
+			left = false;
+		}
+		
+		if(Gdx.input.isTouched() && System.currentTimeMillis() - splats.projectilelast >= 0.25 * 1000){
+			Vector3 clickpos = splats.cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0));
+			
+			float projectileangle = (float) Math.atan2(clickpos.y-(y*splats.batch.scaleFactor), clickpos.x-(x*splats.batch.scaleFactor));
+			
+			shot = new Shot(this, projectileangle, frames+1); //the frames and player don't really matter right now, but once Player and ClientPlayer are merged it will matter TODO make it matter //TODO figure out what this comment is supposed to mean, I don't get it even after it is merged
+		
+			splats.projectilelast = System.currentTimeMillis();
+		}
+		
 		//move camera
 		float delta = Gdx.graphics.getDeltaTime(); //use gdx.deltatime because this is not physics
 		
@@ -115,32 +143,6 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 //		rotation = closestangle;
 //		System.out.println(rotation);
 //		System.out.println(Math.toDegrees(rotation) + " " + Math.toDegrees(rotation+1.5708f));
-	}
-	
-	public void checkInput(Splats splats, Data data){
-		System.out.println(frames + " frames have passed for clientplayer");
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.D)){
-			right = true;
-		}else{
-			right = false;
-		}
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.A)){
-			left = true;
-		}else{
-			left = false;
-		}
-		
-		if(Gdx.input.isTouched() && System.currentTimeMillis() - splats.projectilelast >= 0.25 * 1000){
-			Vector3 clickpos = splats.cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0));
-			
-			float projectileangle = (float) Math.atan2(clickpos.y-(y*splats.batch.scaleFactor), clickpos.x-(x*splats.batch.scaleFactor));
-			
-			shot = new Shot(this, projectileangle, frames+1); //the frames and player don't really matter right now, but once Player and ClientPlayer are merged it will matter TODO make it matter //TODO figure out what this comment is supposed to mean, I don't get it even after it is merged
-		
-			splats.projectilelast = System.currentTimeMillis();
-		}
 		
 	}
 	
