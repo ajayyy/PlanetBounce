@@ -282,22 +282,20 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		}
 		
 		//collision detection
-//		Position position = new Position(clientplayer.x,clientplayer.y,clientplayer.getRadius());
-//		for(Player player2: data.players){//for clientplayer to player
-//			if(player2.collided(position)){
-//				//collided with player
-//				affectColideddata.players(clientplayer, player2);
-//			}
-//		}
-//		for(int i=0;i<data.players.size();i++){//for player to player
-//			Position player1 = new Position(data.players.get(i).x, data.players.get(i).y, data.players.get(i).getRadius());
-//			for(int s=i+1;s<data.players.size();s++){
-//				if(data.players.get(s).collided(player1)){
-//					//collided with player
-//					affectColideddata.players(data.players.get(i),data.players.get(s));
-//				}
-//			}
-//		}
+		for(Player player2: data.players){//for clientplayer to player
+			if(player2.collided(clientplayer)){
+				//collided with player
+				affectColidedPlayers(clientplayer, player2);
+			}
+		}
+		for(int i=0;i<data.players.size();i++){//for player to player
+			for(int s=i+1;s<data.players.size();s++){
+				if(data.players.get(s).collided(data.players.get(i))){
+					//collided with player
+					affectColidedPlayers(data.players.get(i),data.players.get(s));
+				}
+			}
+		}
 		
 		//projectile collision detection
 		for(Projectile projectile: new ArrayList<>(data.projectiles)){
@@ -426,40 +424,40 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 			if (id == messenger.getId()) {
 				System.out.println(frame + " real");
-				long currentFrame = clientplayer.frames;
-				if(frame > currentFrame + futureUpdates.size() - aheadUpdates){
-					for(long i=currentFrame + futureUpdates.size() - aheadUpdates;frame>i;i++){
-						System.out.println("seriously -_-");
-						futureUpdates.add(new Update(1/fps, false));
-					}
-				}
-//				if(frame < currentFrame + futureUpdates.size() - aheadUpdates){
-//					aheadUpdates = (currentFrame + futureUpdates.size() - aheadUpdates) - frame;
+//				long currentFrame = clientplayer.frames;
+//				if(frame > currentFrame + futureUpdates.size() - aheadUpdates){
+//					for(long i=currentFrame + futureUpdates.size() - aheadUpdates;frame>i;i++){
+//						System.out.println("seriously -_-");
+//						futureUpdates.add(new Update(1/fps, false));
+//					}
 //				}
-				
-				if(data.players.isEmpty()){
-					data.players.add(new com.ajayinkingston.splats.Player(3, clientplayer.mass, this));
-					data.players.get(0).x = clientplayer.x;
-					data.players.get(0).y = clientplayer.y;
-					data.players.get(0).xspeed = clientplayer.xspeed;
-					data.players.get(0).yspeed = clientplayer.yspeed;
-
-				}
-				
-				data.players.get(0).x = x;
-				data.players.get(0).y = y;
-				data.players.get(0).yspeed = yspeed;
-				data.players.get(0).xspeed = xspeed;
-				data.players.get(0).mass = clientplayer.mass;
-				
-//				testing = System.currentTimeMillis();
-				
-				if(System.currentTimeMillis() - testing <= 2500){
-//					clientplayer.x = x;
-//					clientplayer.y = y;
-//					clientplayer.yspeed = yspeed;
-//					clientplayer.xspeed = xspeed;
-				}
+////				if(frame < currentFrame + futureUpdates.size() - aheadUpdates){
+////					aheadUpdates = (currentFrame + futureUpdates.size() - aheadUpdates) - frame;
+////				}
+//				
+//				if(data.players.isEmpty()){
+//					data.players.add(new com.ajayinkingston.splats.Player(3, clientplayer.mass, this));
+//					data.players.get(0).x = clientplayer.x;
+//					data.players.get(0).y = clientplayer.y;
+//					data.players.get(0).xspeed = clientplayer.xspeed;
+//					data.players.get(0).yspeed = clientplayer.yspeed;
+//
+//				}
+//				
+//				data.players.get(0).x = x;
+//				data.players.get(0).y = y;
+//				data.players.get(0).yspeed = yspeed;
+//				data.players.get(0).xspeed = xspeed;
+//				data.players.get(0).mass = clientplayer.mass;
+//				
+////				testing = System.currentTimeMillis();
+//				
+//				if(System.currentTimeMillis() - testing <= 2500){
+////					clientplayer.x = x;
+////					clientplayer.y = y;
+////					clientplayer.yspeed = yspeed;
+////					clientplayer.xspeed = xspeed;
+//				}
 				
 //				test.x = x;
 //				test.y = y;
