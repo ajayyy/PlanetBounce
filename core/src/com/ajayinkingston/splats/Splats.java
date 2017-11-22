@@ -62,7 +62,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	
 	ArrayList<Movement> movements = new ArrayList<>(); //movements made by clients, added to this list so that they can all be processed in the same frame;
 	ArrayList<Shot> shots = new ArrayList<>();
-	
+	ArrayList<Spawn> spawns = new ArrayList<>(); //holds data for when a player is spawned
+
 	public Splats(int device) {// 0 web 1 android 2 iOS 3 desktop
 		this.device = device;//this can be removed because there are built in methods for this. TODO remove this
 	}
@@ -112,6 +113,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		clientplayer = new ClientPlayer(messenger.getId(), 0, 800, 0, 0, this);//defaults to startmass right now
 		
 		data = new Data();
+		data.players.add(clientplayer);
 	}
 	
 	@Override
@@ -176,6 +178,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		clientplayer.render(this);
 		
 		for (Player player : new ArrayList<Player>(data.players)) {
+			if(player == clientplayer) continue;
 			((com.ajayinkingston.splats.ClientPlayer) player).render(this);
 		}
 
@@ -279,6 +282,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		test.update(this, 1/fps, false);
 		
 		for (Player player : new ArrayList<Player>(data.players)) {
+			if(player == clientplayer) continue;
 			player.update(data, 1/fps);
 		}
 		
@@ -293,12 +297,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		}
 		
 		//collision detection
-		for(Player player2: data.players){//for clientplayer to player
-			if(player2.collided(clientplayer)){
-				//collided with player
-				affectColidedPlayers(clientplayer, player2);
-			}
-		}
+//		for(Player player2: data.players){//for clientplayer to player
+//			if(player2.collided(clientplayer)){
+//				//collided with player
+//				affectColidedPlayers(clientplayer, player2);
+//			}
+//		}
 		for(int i=0;i<data.players.size();i++){//for player to player
 			for(int s=i+1;s<data.players.size();s++){
 				if(data.players.get(s).collided(data.players.get(i))){
@@ -310,16 +314,15 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		//projectile collision detection
 		for(Projectile projectile: new ArrayList<>(data.projectiles)){
-//			for(Player player: data.players){
-//				Position projectile1 = new Position(projectile.x,projectile.y,projectile.radius);
-//				if(player.collided(projectile1)){
-//					affectColideddata.players(player, projectile);
-//				}
-//			}
-			if(projectile.collided(clientplayer)){
-				//collided with player
-				affectColidedPlayers(clientplayer, projectile);
+			for(Player player: data.players){
+				if(player.collided(projectile)){
+					affectColidedPlayers(player, projectile);
+				}
 			}
+//			if(projectile.collided(clientplayer)){
+//				//collided with player
+//				affectColidedPlayers(clientplayer, projectile);
+//			}
 		}
 		
 	}
@@ -507,6 +510,140 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		return true;
 	}
+	
+	public boolean handleSpawns(Player player, Spawn spawn, long frame) { //returns true if dealt with
+		long currentFrame = clientplayer.frames; //when clientplayer frames hit this frame count, then spawn the player
+		
+		if(spawn.spawnFrame > currentFrame){
+			// that's ok, the client is probably behind on purpose (still need to fix the bug where the client gets incredibly behind)
+			return false;
+		}
+
+		OldState originalState = Data.getOldStateAtFrame(new ArrayList<>(player.oldStates), spawn.spawnFrame);
+		if(originalState == null){
+			originalState = new OldState(player.x, player.y, player.xspeed, player.yspeed, currentFrame, player.left, player.right, false, 0);
+		}
+		
+//		//make now like that old state
+//		player.x = originalState.x;
+//		player.y = originalState.y;
+//		player.xspeed = originalState.xspeed;
+//		player.yspeed = originalState.yspeed;
+
+		
+		//count the difference
+		int amountremoved = player.oldStates.size() - (player.oldStates.indexOf(originalState) + 1);
+		if(frame == currentFrame) amountremoved = 0;
+//		System.out.println("AMOUNT REMOVED " + amountremoved);
+//		int index = player.oldStates.indexOf(originalState);
+//		if(index==-1) index = 0;
+//		ArrayList<OldState> oldOldStates = new ArrayList<>();
+//		for(int i=0;i<amountremoved;i++){//remove all of the future ones
+//			oldOldStates.add(player.oldStates.get(index));
+//			player.oldStates.remove(index);
+//		}
+		//insert new data
+		
+		//make projectile and player oldOldState variables
+		ArrayList<ArrayList<OldState>> playerOldOldStates = new ArrayList<>();
+		ArrayList<ArrayList<OldState>> projectileOldOldStates = new ArrayList<>();
+		
+		//check for any projectiles created after this frame
+		for(Projectile projectile: new ArrayList<>(data.projectiles)){
+			if(projectile.frame < amountremoved){//because amount removed would be the amount of frames that have happened since, if this was created on that frame, then the frame - amount removed would be 0
+				data.projectiles.remove(projectile);
+			}
+		}
+		
+		System.out.println((currentFrame - frame) + " asaasfasasdasfliuioelpo");
+		
+		//set all projectiles to proper values
+		for(Projectile projectile: data.projectiles){
+			OldState state = Data.getOldStateAtFrame(projectile.oldstates, projectile.frame - (currentFrame - frame));
+			projectile.x = state.x;
+			projectile.y = state.y;
+			projectile.xspeed = state.xspeed;
+			projectile.yspeed = state.yspeed;
+			projectile.frame = state.frame;
+			if(projectile.dead && state.frame <= projectile.deadframe){
+				projectile.dead = false;
+			}
+			
+			projectile.oldstates = Data.removeFutureOldStatesFromOldState(projectile.oldstates, state);
+//			projectileOldOldStates.add(getOldStatesAfterOldState(projectile.oldstates, state));
+		}
+		
+		//set all players to proper values
+		for(Player player2: data.players){
+			OldState state = Data.getOldStateAtFrame(player2.oldStates, player2.frames - (currentFrame - frame));
+			player2.x = state.x;
+			player2.y = state.y;
+			player2.xspeed = state.xspeed;
+			player2.yspeed = state.yspeed;
+			player2.frames = state.frame;
+			
+			playerOldOldStates.add(Data.getOldStatesAfterOldState(player2.oldStates, state));
+			player2.oldStates = Data.removeFutureOldStatesFromOldState(player2.oldStates, state);
+		}
+		
+//		player.shoot(projectileangle, data.projectiles, ClientProjectile.class);
+		
+		ArrayList<Player> nonSpawnedPlayers = new ArrayList<>();
+		
+		for(Player player2: new ArrayList<>(data.players)){
+			if(player2.frames < amountremoved){//because amount removed would be the amount of frames that have happened since, if this was created on that frame, then the frame - amount removed would be 0
+				nonSpawnedPlayers.add(player2);
+				data.players.remove(player2);
+			}
+		}
+		
+		//change xspeeds
+//		player.xspeed -= (float) (Math.cos(projectileangle) * projectileSpeedChange);
+//		player.yspeed -= (float) (Math.sin(projectileangle) * projectileSpeedChange);
+		
+		//set the player shot variable and projectileangle
+//		player.shot = true;
+//		player.projectileangle = projectileangle;//TODO CALL METHOD
+		
+		//create projectiles
+//		Projectile addedProjectile = new Projectile(player.x + ((player.getSize() + projectilesize/2) * Math.cos(projectileangle)), player.y + ((player.getSize() + projectilesize/2) * Math.sin(projectileangle)), projectilesize, projectileangle, projectileSpeed);
+//		projectiles.add(addedProjectile);
+		
+		player.frames = frame;
+		
+		//call update however many missed frames there were
+		for(int i=0;i<amountremoved;i++){//remove all of the future ones
+			System.out.println("isthisevenrunning????");
+			
+			for(Player player2: new ArrayList<>(nonSpawnedPlayers)){
+				if(player.frames < amountremoved-i){
+					data.players.add(player2);
+					nonSpawnedPlayers.remove(player2);
+				}
+			}
+			
+			//iterate through players to make sure all events from oldstate are recalculated
+			for(Player player2: data.players){
+				ArrayList<OldState> oldOldStates = playerOldOldStates.get(data.players.indexOf(player2));
+				player2.left = oldOldStates.get(i).left;
+				player2.right = oldOldStates.get(i).right;
+				if(oldOldStates.get(i).shot){
+					player2.shoot(oldOldStates.get(i).projectileAngle, data.projectiles, Projectile.class);
+//					player2.shot = true;
+//					player2.projectileangle = oldOldStates.get(i).projectileangle;
+//					player2.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileangle) * projectileSpeedChange);
+//					player2.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileangle) * projectileSpeedChange);
+//					
+//					Projectile addedProjectile1 = new Projectile(player.x + ((player.getSize() + projectilesize/2) * Math.cos(oldOldStates.get(i).projectileangle)), player.y + ((player.getSize() + projectilesize/2) * Math.sin(oldOldStates.get(i).projectileangle)), projectilesize, oldOldStates.get(i).projectileangle, projectileSpeed);
+//					projectiles.add(addedProjectile1);
+				}
+			}
+			
+			update(1/fps, true);
+		}
+		
+		return true;
+	}
 
 	@Override
 	public void dispose() {
@@ -517,7 +654,13 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	@Override
 	public void onMessageRecieved(String message) {
 		if (message.startsWith("CONNECTED")) {
-
+			
+//			String[] messageData = message.split(" ");
+//
+//			Spawn spawn = new Spawn(Integer.parseInt(messageData[1]), Float.parseFloat(messageData[2]), Float.parseFloat(messageData[3]), Float.parseFloat(messageData[4]), Float.parseFloat(messageData[5]), Integer.parseInt(messageData[6]), 0, 0);
+//			
+//			spawns.add(spawn);
+			
 			Player player = new ClientPlayer(Integer.parseInt(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]), Integer.parseInt(message.split(" ")[6]), 0, this);
 			player.xspeed = Float.parseFloat(message.split(" ")[4]);
 			player.yspeed = Float.parseFloat(message.split(" ")[5]);
