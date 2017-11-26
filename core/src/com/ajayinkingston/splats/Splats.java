@@ -5,7 +5,6 @@ import java.util.Random;
 
 import com.ajayinkingston.planets.server.Data;
 import com.ajayinkingston.planets.server.Entity;
-import com.ajayinkingston.planets.server.Main;
 import com.ajayinkingston.planets.server.Movement;
 import com.ajayinkingston.planets.server.OldState;
 import com.ajayinkingston.planets.server.Planet;
@@ -175,6 +174,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 
 		double delta = Gdx.graphics.getRawDeltaTime();
 		
+		if(delta > 0.1f) delta = 1/fps;
+		
 		clientplayer.render(this);
 		
 		for (Player player : new ArrayList<Player>(data.players)) {
@@ -297,32 +298,26 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		}
 		
 		//collision detection
-//		for(Player player2: data.players){//for clientplayer to player
-//			if(player2.collided(clientplayer)){
-//				//collided with player
-//				affectColidedPlayers(clientplayer, player2);
+//		for(int i=0;i<data.players.size();i++){//for player to player
+//			for(int s=i+1;s<data.players.size();s++){
+//				if(data.players.get(s).collided(data.players.get(i))){
+//					//collided with player
+//					affectColidedPlayers(data.players.get(i),data.players.get(s));
+//				}
 //			}
 //		}
-		for(int i=0;i<data.players.size();i++){//for player to player
-			for(int s=i+1;s<data.players.size();s++){
-				if(data.players.get(s).collided(data.players.get(i))){
-					//collided with player
-					affectColidedPlayers(data.players.get(i),data.players.get(s));
-				}
-			}
-		}
-		
-		//projectile collision detection
+//		
+//		//projectile collision detection
 		for(Projectile projectile: new ArrayList<>(data.projectiles)){
-			for(Player player: data.players){
-				if(player.collided(projectile)){
-					affectColidedPlayers(player, projectile);
-				}
-			}
-//			if(projectile.collided(clientplayer)){
-//				//collided with player
-//				affectColidedPlayers(clientplayer, projectile);
+//			for(Player player: data.players){
+//				if(player.collided(projectile)){
+//					affectColidedPlayers(player, projectile);
+//				}
 //			}
+			if(projectile.collided(clientplayer)){
+				//collided with player
+				affectColidedPlayers(clientplayer, projectile);
+			}
 		}
 		
 	}
@@ -511,7 +506,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		return true;
 	}
 	
-	public boolean handleSpawns(Player player, Spawn spawn, long frame) { //returns true if dealt with
+	public boolean handleSpawns(Player newPlayer, Spawn spawn, Player player, long frame) { //returns true if dealt with
+		
+		/*The frame that is being recieved is the frame of clientplayer that the player spawned at
+
+		The variable also includes what frame it was at when spawned (because "spawning" includes players connected before this player connected) **/
+		
 		long currentFrame = clientplayer.frames; //when clientplayer frames hit this frame count, then spawn the player
 		
 		if(spawn.spawnFrame > currentFrame){
@@ -519,9 +519,9 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			return false;
 		}
 
-		OldState originalState = Data.getOldStateAtFrame(new ArrayList<>(player.oldStates), spawn.spawnFrame);
+		OldState originalState = Data.getOldStateAtFrame(new ArrayList<>(clientplayer.oldStates), spawn.spawnFrame);
 		if(originalState == null){
-			originalState = new OldState(player.x, player.y, player.xspeed, player.yspeed, currentFrame, player.left, player.right, false, 0);
+			originalState = new OldState(clientplayer.x, clientplayer.y, clientplayer.xspeed, clientplayer.yspeed, currentFrame, player.left, player.right, false, 0);
 		}
 		
 //		//make now like that old state
@@ -533,7 +533,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		//count the difference
 		int amountremoved = player.oldStates.size() - (player.oldStates.indexOf(originalState) + 1);
-		if(frame == currentFrame) amountremoved = 0;
+		if(spawn.spawnFrame == currentFrame) amountremoved = 0;
 //		System.out.println("AMOUNT REMOVED " + amountremoved);
 //		int index = player.oldStates.indexOf(originalState);
 //		if(index==-1) index = 0;
@@ -721,6 +721,35 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			float xspeed = Float.parseFloat(message.split(" ")[4]);
 			float yspeed = Float.parseFloat(message.split(" ")[5]);
 			long frame = Long.parseLong(message.split(" ")[6]);
+			
+			if (id == messenger.getId()) {
+				System.out.println(frame + " real");
+				long currentFrame = clientplayer.frames;
+				if(frame > currentFrame + futureUpdates.size() - aheadUpdates){
+					for(long i=currentFrame + futureUpdates.size() - aheadUpdates;frame>i;i++){
+						futureUpdates.add(new Update(1/fps, false));
+					}
+				}
+//				if(frame < currentFrame + futureUpdates.size() - aheadUpdates){
+//					aheadUpdates = (currentFrame + futureUpdates.size() - aheadUpdates) - frame;
+//				}
+				
+//				if(data.players.size() < 2){
+//					data.players.add(new ClientPlayer(3, 0, 0, clientplayer.mass, 0, this));
+//					data.players.get(1).x = clientplayer.x;
+//					data.players.get(1).y = clientplayer.y;
+//					data.players.get(1).xspeed = clientplayer.xspeed;
+//					data.players.get(1).yspeed = clientplayer.yspeed;
+//
+//				}
+//				
+//				data.players.get(1).x = x;
+//				data.players.get(1).y = y;
+//				data.players.get(1).yspeed = yspeed;
+//				data.players.get(1).xspeed = xspeed;
+//				data.players.get(1).mass = clientplayer.mass;
+				
+			}
 
 		} else if (message.startsWith("s")) {
 			
