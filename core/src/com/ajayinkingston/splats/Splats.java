@@ -412,7 +412,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			player2.oldStates = Data.removeFutureOldStatesFromOldState(player2.oldStates, state);
 		}
 		
-		player.shoot(projectileangle, data.projectiles, Projectile.class);
+		player.shoot(projectileangle, data.projectiles, ClientProjectile.class);
 		
 		ArrayList<Player> nonSpawnedPlayers = new ArrayList<>();
 		
