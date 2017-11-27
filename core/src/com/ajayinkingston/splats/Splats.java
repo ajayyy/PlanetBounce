@@ -364,50 +364,16 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		//now do the thing
 		if(frame > currentFrame){
 			// that's ok, the client is probably behind on purpose (still need to fix the bug where the client gets incredibly behind)
-//			player.start = (long) (currentTime - time);
-			frame = currentFrame;
 			System.out.println("aslkjdsalkjasjjjdjdsajasldjdas");
 			return false;
 		}
 
-//		player.shot = true;
-//		player.projectileangle = projectileangle;
-		
-//		if(frame == currentFrame){
-//			System.out.println("asertyuiute456765rf");
-//			return true;
-//		}else{
-//			System.out.println("aefsrtyu7654322sertyuiute456765rf");
-//		}
-		
-		OldState originalState = Data.getOldStateAtFrame(new ArrayList<>(player.oldStates), frame);
-		if(originalState == null){
-			originalState = new OldState(player.x, player.y, player.xspeed, player.yspeed, currentFrame, player.left, player.right, false, 0);
-		}
-		
-//		//make now like that old state
-//		player.x = originalState.x;
-//		player.y = originalState.y;
-//		player.xspeed = originalState.xspeed;
-//		player.yspeed = originalState.yspeed;
-
-		
 		//count the difference
-		int amountremoved = player.oldStates.size() - (player.oldStates.indexOf(originalState) + 1);
+		long amountremoved = currentFrame - frame;
 		if(frame == currentFrame) amountremoved = 0;
-//		System.out.println("AMOUNT REMOVED " + amountremoved);
-//		int index = player.oldStates.indexOf(originalState);
-//		if(index==-1) index = 0;
-//		ArrayList<OldState> oldOldStates = new ArrayList<>();
-//		for(int i=0;i<amountremoved;i++){//remove all of the future ones
-//			oldOldStates.add(player.oldStates.get(index));
-//			player.oldStates.remove(index);
-//		}
-		//insert new data
 		
 		//make projectile and player oldOldState variables
 		ArrayList<ArrayList<OldState>> playerOldOldStates = new ArrayList<>();
-		ArrayList<ArrayList<OldState>> projectileOldOldStates = new ArrayList<>();
 		
 		//check for any projectiles created after this frame
 		for(Projectile projectile: new ArrayList<>(data.projectiles)){
@@ -431,7 +397,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			}
 			
 			projectile.oldstates = Data.removeFutureOldStatesFromOldState(projectile.oldstates, state);
-//			projectileOldOldStates.add(getOldStatesAfterOldState(projectile.oldstates, state));
 		}
 		
 		//set all players to proper values
@@ -447,7 +412,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			player2.oldStates = Data.removeFutureOldStatesFromOldState(player2.oldStates, state);
 		}
 		
-		player.shoot(projectileangle, data.projectiles, ClientProjectile.class);
+		player.shoot(projectileangle, data.projectiles, Projectile.class);
 		
 		ArrayList<Player> nonSpawnedPlayers = new ArrayList<>();
 		
@@ -457,18 +422,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				data.players.remove(player2);
 			}
 		}
-		
-		//change xspeeds
-//		player.xspeed -= (float) (Math.cos(projectileangle) * projectileSpeedChange);
-//		player.yspeed -= (float) (Math.sin(projectileangle) * projectileSpeedChange);
-		
-		//set the player shot variable and projectileangle
-//		player.shot = true;
-//		player.projectileangle = projectileangle;//TODO CALL METHOD
-		
-		//create projectiles
-//		Projectile addedProjectile = new Projectile(player.x + ((player.getSize() + projectilesize/2) * Math.cos(projectileangle)), player.y + ((player.getSize() + projectilesize/2) * Math.sin(projectileangle)), projectilesize, projectileangle, projectileSpeed);
-//		projectiles.add(addedProjectile);
 		
 		player.frames = frame;
 		
@@ -490,13 +443,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				player2.right = oldOldStates.get(i).right;
 				if(oldOldStates.get(i).shot){
 					player2.shoot(oldOldStates.get(i).projectileAngle, data.projectiles, Projectile.class);
-//					player2.shot = true;
-//					player2.projectileangle = oldOldStates.get(i).projectileangle;
-//					player2.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileangle) * projectileSpeedChange);
-//					player2.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileangle) * projectileSpeedChange);
-//					
-//					Projectile addedProjectile1 = new Projectile(player.x + ((player.getSize() + projectilesize/2) * Math.cos(oldOldStates.get(i).projectileangle)), player.y + ((player.getSize() + projectilesize/2) * Math.sin(oldOldStates.get(i).projectileangle)), projectilesize, oldOldStates.get(i).projectileangle, projectileSpeed);
-//					projectiles.add(addedProjectile1);
 				}
 			}
 			
@@ -519,34 +465,12 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			return false;
 		}
 
-		OldState originalState = Data.getOldStateAtFrame(new ArrayList<>(clientplayer.oldStates), spawn.spawnFrame);
-		if(originalState == null){
-			originalState = new OldState(clientplayer.x, clientplayer.y, clientplayer.xspeed, clientplayer.yspeed, currentFrame, player.left, player.right, false, 0);
-		}
-		
-//		//make now like that old state
-//		player.x = originalState.x;
-//		player.y = originalState.y;
-//		player.xspeed = originalState.xspeed;
-//		player.yspeed = originalState.yspeed;
-
-		
 		//count the difference
-		int amountremoved = player.oldStates.size() - (player.oldStates.indexOf(originalState) + 1);
+		long amountremoved = currentFrame - frame;
 		if(spawn.spawnFrame == currentFrame) amountremoved = 0;
-//		System.out.println("AMOUNT REMOVED " + amountremoved);
-//		int index = player.oldStates.indexOf(originalState);
-//		if(index==-1) index = 0;
-//		ArrayList<OldState> oldOldStates = new ArrayList<>();
-//		for(int i=0;i<amountremoved;i++){//remove all of the future ones
-//			oldOldStates.add(player.oldStates.get(index));
-//			player.oldStates.remove(index);
-//		}
-		//insert new data
 		
 		//make projectile and player oldOldState variables
 		ArrayList<ArrayList<OldState>> playerOldOldStates = new ArrayList<>();
-		ArrayList<ArrayList<OldState>> projectileOldOldStates = new ArrayList<>();
 		
 		//check for any projectiles created after this frame
 		for(Projectile projectile: new ArrayList<>(data.projectiles)){
@@ -554,8 +478,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				data.projectiles.remove(projectile);
 			}
 		}
-		
-		System.out.println((currentFrame - frame) + " asaasfasasdasfliuioelpo");
 		
 		//set all projectiles to proper values
 		for(Projectile projectile: data.projectiles){
@@ -570,7 +492,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			}
 			
 			projectile.oldstates = Data.removeFutureOldStatesFromOldState(projectile.oldstates, state);
-//			projectileOldOldStates.add(getOldStatesAfterOldState(projectile.oldstates, state));
 		}
 		
 		//set all players to proper values
@@ -586,8 +507,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			player2.oldStates = Data.removeFutureOldStatesFromOldState(player2.oldStates, state);
 		}
 		
-//		player.shoot(projectileangle, data.projectiles, ClientProjectile.class);
-		
 		ArrayList<Player> nonSpawnedPlayers = new ArrayList<>();
 		
 		for(Player player2: new ArrayList<>(data.players)){
@@ -596,18 +515,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				data.players.remove(player2);
 			}
 		}
-		
-		//change xspeeds
-//		player.xspeed -= (float) (Math.cos(projectileangle) * projectileSpeedChange);
-//		player.yspeed -= (float) (Math.sin(projectileangle) * projectileSpeedChange);
-		
-		//set the player shot variable and projectileangle
-//		player.shot = true;
-//		player.projectileangle = projectileangle;//TODO CALL METHOD
-		
-		//create projectiles
-//		Projectile addedProjectile = new Projectile(player.x + ((player.getSize() + projectilesize/2) * Math.cos(projectileangle)), player.y + ((player.getSize() + projectilesize/2) * Math.sin(projectileangle)), projectilesize, projectileangle, projectileSpeed);
-//		projectiles.add(addedProjectile);
 		
 		player.frames = frame;
 		
@@ -629,13 +536,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 				player2.right = oldOldStates.get(i).right;
 				if(oldOldStates.get(i).shot){
 					player2.shoot(oldOldStates.get(i).projectileAngle, data.projectiles, Projectile.class);
-//					player2.shot = true;
-//					player2.projectileangle = oldOldStates.get(i).projectileangle;
-//					player2.xspeed -= (float) (Math.cos(oldOldStates.get(i).projectileangle) * projectileSpeedChange);
-//					player2.yspeed -= (float) (Math.sin(oldOldStates.get(i).projectileangle) * projectileSpeedChange);
-//					
-//					Projectile addedProjectile1 = new Projectile(player.x + ((player.getSize() + projectilesize/2) * Math.cos(oldOldStates.get(i).projectileangle)), player.y + ((player.getSize() + projectilesize/2) * Math.sin(oldOldStates.get(i).projectileangle)), projectilesize, oldOldStates.get(i).projectileangle, projectileSpeed);
-//					projectiles.add(addedProjectile1);
 				}
 			}
 			
