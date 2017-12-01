@@ -17,6 +17,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g3d.particles.values.PointSpawnShapeValue;
+import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue.SpawnSide;
 import com.jlcm.prototipo.ClientMessageReceiver;
 import com.jlcm.prototipo.WebSocketClientMessenger;
 
@@ -295,25 +297,29 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			for(Shot shot: new ArrayList<>(shots)){
 				if(handleShot(shot.player, shot.projectileangle, shot.frame)) shots.remove(shot);
 			}
+			
+			for(Spawn spawn: new ArrayList<>(spawns)){
+				if(handleSpawns(spawn)) spawns.remove(spawn);
+			}
 		}
 		
 		//collision detection
-//		for(int i=0;i<data.players.size();i++){//for player to player
-//			for(int s=i+1;s<data.players.size();s++){
-//				if(data.players.get(s).collided(data.players.get(i))){
-//					//collided with player
-//					affectColidedPlayers(data.players.get(i),data.players.get(s));
-//				}
-//			}
-//		}
-//		
-//		//projectile collision detection
+		for(int i=0;i<data.players.size();i++){//for player to player
+			for(int s=i+1;s<data.players.size();s++){
+				if(data.players.get(s).collided(data.players.get(i))){
+					//collided with player
+					affectColidedPlayers(data.players.get(i),data.players.get(s));
+				}
+			}
+		}
+		
+		//projectile collision detection
 		for(Projectile projectile: new ArrayList<>(data.projectiles)){
-//			for(Player player: data.players){
-//				if(player.collided(projectile)){
-//					affectColidedPlayers(player, projectile);
-//				}
-//			}
+			for(Player player: data.players){
+				if(player.collided(projectile)){
+					affectColidedPlayers(player, projectile);
+				}
+			}
 			if(projectile.collided(clientplayer)){
 				//collided with player
 				affectColidedPlayers(clientplayer, projectile);
@@ -329,6 +335,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //	    float player2xspeed = (player2.xspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player1.xspeed)) / (clientplayer.startmass + clientplayer.startmass);  ////https://gamedevelopment.tutsplus.com/tutorials/when-worlds-collide-simulating-circle-circle-collisions--gamedev-769
 //	    float player2yspeed = (player2.yspeed * (player1.getSize() - player1.getSize()) + (2 * clientplayer.startmass * player1.yspeed)) / (clientplayer.startmass + clientplayer.startmass);
 	    
+		//to create the bouncing effect, you just need to swap the speeds
+		
 	    float player1xspeed = player2.xspeed;
 	    float player1yspeed = player2.yspeed;
 	    float player2xspeed = player1.xspeed;  //https://gamedevelopment.tutsplus.com/tutorials/when-worlds-collide-simulating-circle-circle-collisions--gamedev-769
@@ -364,7 +372,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		//now do the thing
 		if(frame > currentFrame){
 			// that's ok, the client is probably behind on purpose (still need to fix the bug where the client gets incredibly behind)
-			System.out.println("aslkjdsalkjasjjjdjdsajasldjdas");
 			return false;
 		}
 
@@ -412,6 +419,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			player2.oldStates = Data.removeFutureOldStatesFromOldState(player2.oldStates, state);
 		}
 		
+		//do the action
 		player.shoot(projectileangle, data.projectiles, ClientProjectile.class);
 		
 		ArrayList<Player> nonSpawnedPlayers = new ArrayList<>();
@@ -427,7 +435,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		//call update however many missed frames there were
 		for(int i=0;i<amountremoved;i++){//remove all of the future ones
-			System.out.println("isthisevenrunning????");
 			
 			for(Player player2: new ArrayList<>(nonSpawnedPlayers)){
 				if(player.frames < amountremoved-i){
@@ -452,7 +459,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		return true;
 	}
 	
-	public boolean handleSpawns(Player newPlayer, Spawn spawn, Player player, long frame) { //returns true if dealt with
+	public boolean handleSpawns(Spawn spawn) { //returns true if dealt with
 		
 		/*The frame that is being recieved is the frame of clientplayer that the player spawned at
 
@@ -466,7 +473,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		}
 
 		//count the difference
-		long amountremoved = currentFrame - frame;
+		System.out.println("SPAWN FRAME:	" + spawn.spawnFrame);
+		long amountremoved = currentFrame - spawn.spawnFrame;
 		if(spawn.spawnFrame == currentFrame) amountremoved = 0;
 		
 		//make projectile and player oldOldState variables
@@ -481,7 +489,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		//set all projectiles to proper values
 		for(Projectile projectile: data.projectiles){
-			OldState state = Data.getOldStateAtFrame(projectile.oldstates, projectile.frame - (currentFrame - frame));
+			OldState state = Data.getOldStateAtFrame(projectile.oldstates, projectile.frame - (currentFrame - spawn.spawnFrame));
 			projectile.x = state.x;
 			projectile.y = state.y;
 			projectile.xspeed = state.xspeed;
@@ -496,7 +504,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		//set all players to proper values
 		for(Player player2: data.players){
-			OldState state = Data.getOldStateAtFrame(player2.oldStates, player2.frames - (currentFrame - frame));
+			OldState state = Data.getOldStateAtFrame(player2.oldStates, player2.frames - (currentFrame - spawn.spawnFrame));
 			player2.x = state.x;
 			player2.y = state.y;
 			player2.xspeed = state.xspeed;
@@ -507,31 +515,69 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			player2.oldStates = Data.removeFutureOldStatesFromOldState(player2.oldStates, state);
 		}
 		
-		ArrayList<Player> nonSpawnedPlayers = new ArrayList<>();
+		// A list of spawn variables for these players since they are going to be started from the beginning
+		ArrayList<Spawn> nonSpawnedPlayers = new ArrayList<>(); //TODO add this new code to all of these methods
+		ArrayList<ArrayList<OldState>> nonSpawnedOldStates = new ArrayList<>();
 		
 		for(Player player2: new ArrayList<>(data.players)){
-			if(player2.frames < amountremoved){//because amount removed would be the amount of frames that have happened since, if this was created on that frame, then the frame - amount removed would be 0
-				nonSpawnedPlayers.add(player2);
+			ClientPlayer clientPlayer = (ClientPlayer) player2;
+			if(clientPlayer.frames - clientPlayer.startFrame < amountremoved){//because amount removed would be the amount of frames that have happened since, if this was created on that frame, then the frame - amount removed would be 0
+				
+				OldState spawnState = clientPlayer.oldStates.get(0);
+				
+				Spawn playerSpawn = new Spawn(spawn.id, spawnState.x, spawnState.y, spawnState.xspeed, spawnState.yspeed, spawnState.mass, clientPlayer.startFrame, 0); //spawn frame does not matter in this case
+				
+				playerSpawn.image = clientPlayer.imageNum;
+				
+				nonSpawnedPlayers.add(playerSpawn);
+				playerOldOldStates.remove(data.players.indexOf(player2));
+				
+				OldState state = Data.getOldStateAtFrame(player2.oldStates, player2.frames - (currentFrame - spawn.spawnFrame));
+
+				nonSpawnedOldStates.add(Data.getOldStatesAfterOldState(player2.oldStates, state));
+				
 				data.players.remove(player2);
 			}
 		}
 		
-		player.frames = frame;
+		//do the action
+//		ClientPlayer player = new ClientPlayer(spawn.id, spawn.x, spawn.y, spawn.mass, spawn.startFrame, this);
+//		player.xspeed = spawn.xspeed;
+//		player.yspeed = spawn.yspeed;
+		
+		nonSpawnedPlayers.add(spawn);
 		
 		//call update however many missed frames there were
 		for(int i=0;i<amountremoved;i++){//remove all of the future ones
-			System.out.println("isthisevenrunning????");
 			
-			for(Player player2: new ArrayList<>(nonSpawnedPlayers)){
-				if(player.frames < amountremoved-i){
-					data.players.add(player2);
-					nonSpawnedPlayers.remove(player2);
-				}
+			for(Spawn playerSpawn: new ArrayList<>(nonSpawnedPlayers)){
+				if(playerSpawn.startFrame > clientplayer.frames){
+					ClientPlayer player = new ClientPlayer(playerSpawn.id, playerSpawn.x, playerSpawn.y, playerSpawn.mass, playerSpawn.startFrame, this);
+					player.xspeed = playerSpawn.xspeed;
+					player.yspeed = playerSpawn.yspeed;
+					
+					if(playerSpawn.image != -1) player.imageNum = playerSpawn.image;
+					
+					data.players.add(player);
+					nonSpawnedPlayers.remove(playerSpawn);
+				} 
 			}
 			
 			//iterate through players to make sure all events from oldstate are recalculated
 			for(Player player2: data.players){
-				ArrayList<OldState> oldOldStates = playerOldOldStates.get(data.players.indexOf(player2));
+				int index = data.players.indexOf(player2);
+				
+				ArrayList<OldState> oldOldStates = null;
+				
+				if(index > playerOldOldStates.size() - 1){ //get it from nonSpawnedOldStates if it wasn't spawned at the start
+					oldOldStates = nonSpawnedOldStates.get(index - (playerOldOldStates.size()));
+				}else{
+					oldOldStates = playerOldOldStates.get(index);
+				}
+				
+				if(oldOldStates.size() == 0) continue; // if the list is empty it was just spawned
+
+					
 				player2.left = oldOldStates.get(i).left;
 				player2.right = oldOldStates.get(i).right;
 				if(oldOldStates.get(i).shot){
@@ -555,17 +601,18 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	public void onMessageRecieved(String message) {
 		if (message.startsWith("CONNECTED")) {
 			
-//			String[] messageData = message.split(" ");
-//
-//			Spawn spawn = new Spawn(Integer.parseInt(messageData[1]), Float.parseFloat(messageData[2]), Float.parseFloat(messageData[3]), Float.parseFloat(messageData[4]), Float.parseFloat(messageData[5]), Integer.parseInt(messageData[6]), 0, 0);
-//			
-//			spawns.add(spawn);
-			
-			Player player = new ClientPlayer(Integer.parseInt(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]), Integer.parseInt(message.split(" ")[6]), 0, this);
-			player.xspeed = Float.parseFloat(message.split(" ")[4]);
-			player.yspeed = Float.parseFloat(message.split(" ")[5]);
+			String[] messageData = message.split(" ");
 
-			data.players.add(player);
+			Spawn spawn = new Spawn(Integer.parseInt(messageData[1]), Float.parseFloat(messageData[2]), Float.parseFloat(messageData[3]), Float.parseFloat(messageData[4]), Float.parseFloat(messageData[5]), Integer.parseInt(messageData[6]), 0, 0);
+			
+			spawns.add(spawn);
+			
+//			Player player = new ClientPlayer(Integer.parseInt(message.split(" ")[1]), Float.parseFloat(message.split(" ")[2]), Float.parseFloat(message.split(" ")[3]), Integer.parseInt(message.split(" ")[6]), 0, this);
+//			player.xspeed = Float.parseFloat(message.split(" ")[4]);
+//			player.yspeed = Float.parseFloat(message.split(" ")[5]);
+//
+//			data.players.add(player);
+			
 		} else if (message.startsWith("DISCONNECTED")) {
 			data.players.remove(getPlayer(Integer.parseInt(message.split(" ")[1])));
 		} else if (message.startsWith("PLANET")) {

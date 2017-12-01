@@ -18,8 +18,6 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	
 	double rotation = -1000000000; //might be needed for camera rotations
 	
-	Texture image;
-	
 	float maxspeed = 500;
 	
 //	float bounceheight = 1200; //Now set in planet class
@@ -42,7 +40,7 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 //	Player transformationPlayer;
 //	float transformationPlayerPercent = -1;
 	
-	int imagenum;
+	int imageNum;
 	
 //	long rightstart;
 	
@@ -50,23 +48,26 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	
 	Shot shot = null; // null if no shot this frame
 	
-	public ClientPlayer(int id, float x, float y, int mass, int frame, Splats splats){
+	long startFrame; //what frame did this start with
+	
+	public ClientPlayer(int id, float x, float y, int mass, long frame, Splats splats){
 		super(id, x, y, mass);
 		
 		this.mass = startmass;
 		
 		this.frames = frame; //start frame is there is any
+		this.startFrame = frame; //started on this frame
 		
 		start = System.currentTimeMillis(); //incase somehow onconnect is not called
 		
-		imagenum = rand.nextInt(splats.playerImages.length);
+		imageNum = rand.nextInt(splats.playerImages.length);
 	}
 	
 	public void render(Splats splats){ //also does camera movement 
 		splats.batch.begin();
 		float factor = 1.3f;
 		splats.batch.draw(splats.shadow, x-getSize()/2*factor, y-getSize()/2*factor, getSize()*factor, getSize()*factor);
-		splats.batch.draw(splats.playerImages[imagenum], x-getSize()/2, y-getSize()/2, getSize(), getSize());
+		splats.batch.draw(splats.playerImages[imageNum], x-getSize()/2, y-getSize()/2, getSize(), getSize());
 		splats.batch.end();
 		
 	}

@@ -9,9 +9,12 @@ public class Spawn {
 	float x,y,xspeed,yspeed;
 	int id, mass;
 	
-	int spawnFrame, startFrame;
+	long spawnFrame, startFrame;
 	
-	public Spawn(int id, float x, float y, float xspeed, float yspeed, int mass, int startFrame, int spawnFrame){
+	int image = -1; //stores what image they use to keep it consistent if the player must be repawned for being too new
+	//if -1 it wasn't set
+	
+	public Spawn(int id, float x, float y, float xspeed, float yspeed, int mass, long startFrame, long spawnFrame){
 		this.id = id;
 		this.x = x;
 		this.y = y;
