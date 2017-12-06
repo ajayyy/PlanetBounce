@@ -49,14 +49,17 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	Shot shot = null; // null if no shot this frame
 	
 	long startFrame; //what frame did this start with
+	Spawn spawn; //the spawn that spawned this player (null if client player)
 	
-	public ClientPlayer(int id, float x, float y, int mass, long frame, Splats splats){
+	public ClientPlayer(int id, float x, float y, int mass, long frame, Spawn spawn, Splats splats){
 		super(id, x, y, mass);
 		
 		this.mass = startmass;
 		
 		this.frames = frame; //start frame is there is any
 		this.startFrame = frame; //started on this frame
+		
+		this.spawn = spawn;
 		
 		start = System.currentTimeMillis(); //incase somehow onconnect is not called
 		
