@@ -115,10 +115,22 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	
 	@Override
 	public void resize(int width, int height) {
-//        cam.viewportWidth = width*1.3f;
-//        cam.viewportHeight = height*1.3f;
-		cam.viewportWidth = width*0.5f;
-        cam.viewportHeight = height*0.5f;
+		float multiplier = 1f;
+		
+		if (width > height) {
+			//landscape
+			//1050 is the amount it should always scale to for width
+			multiplier = 1050f / width;
+		} else {
+			//portrait
+			//590 is the amount it should always scale to for height
+			multiplier = 590f / width;
+		}
+		
+		//this makes it so that everyone has a fair viewing distance no matter how large their screen 
+		//and no matter the aspect ratio
+		cam.viewportWidth = width * multiplier;
+        cam.viewportHeight = height * multiplier;
     }
 
 	@Override
