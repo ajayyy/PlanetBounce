@@ -17,8 +17,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g3d.particles.values.PointSpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue.SpawnSide;
 import com.jlcm.prototipo.ClientMessageReceiver;
 import com.jlcm.prototipo.WebSocketClientMessenger;
 
@@ -121,8 +119,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 	public void resize(int width, int height) {
 //        cam.viewportWidth = width*1.3f;
 //        cam.viewportHeight = height*1.3f;
-		cam.viewportWidth = width*1f;
-        cam.viewportHeight = height*1f;
+		cam.viewportWidth = width*0.5f;
+        cam.viewportHeight = height*0.5f;
     }
 
 	@Override
