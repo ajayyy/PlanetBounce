@@ -107,8 +107,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 //		messenger = new WebSocketClientMessenger("ajay.ddns.net", 2492, device, this);
 		messenger = new WebSocketClientMessenger("localhost", 2492, device, this);
 		
-		System.out.println("ASdsadasd");
-		
 		clientplayer = new ClientPlayer(messenger.getId(), 0, 800, 0, 0, null, this);//defaults to startmass right now
 		
 		data = new Data();
@@ -130,8 +128,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		// messenger.sendMessage(clientplayer.x + " " + clientplayer.y + " " +
 		// clientplayer.xspeed + " " + clientplayer.7yspeed);
 		
-		System.out.println(clientplayer.start);
-
 		Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond() + " " + random.nextDouble());
 		cam.update();
 		batch.setProjectionMatrix(cam.combined);
@@ -387,8 +383,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 			}
 		}
 		
-		System.out.println((currentFrame - frame) + " asaasfasasdasfliuioelpo");
-		
 		//set all projectiles to proper values
 		for(Projectile projectile: data.projectiles){
 			OldState state = Data.getOldStateAtFrame(projectile.oldstates, projectile.frame - (currentFrame - frame));
@@ -471,10 +465,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		}
 
 		//count the difference
-		System.out.println("SPAWN FRAME:	" + spawn.spawnFrame);
 		long amountremoved = currentFrame - spawn.spawnFrame;
 		if(spawn.spawnFrame == currentFrame) amountremoved = 0;
-		System.out.println("AMOUNT REMOVED:	" + amountremoved + " CLIENTPLAYER FRAMES " + clientplayer.frames);
 		
 		//make projectile and player oldOldState variables
 		ArrayList<ArrayList<OldState>> playerOldOldStates = new ArrayList<>();
@@ -555,7 +547,6 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		
 		//call update however many missed frames there were
 		for(int i=0;i<amountremoved;i++){//remove all of the future ones
-			
 			for(Spawn playerSpawn: new ArrayList<>(nonSpawnedPlayers)){
 				if(playerSpawn.spawnFrame == clientplayer.frames){
 					ClientPlayer player = new ClientPlayer(playerSpawn.id, playerSpawn.x, playerSpawn.y, playerSpawn.mass, playerSpawn.startFrame, playerSpawn, this);
@@ -566,11 +557,8 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 					
 					data.players.add(player);
 					nonSpawnedPlayers.remove(playerSpawn);
-					System.out.println("SPAWNED THE PLAYER IN HANDLESPAWNS");
 				} 
 			}
-			
-			System.out.println("FRAME " + i + " OF THE AMOUNT REMOVED FOR LOOP IN HANDLESPAWNS | CLIENTPLAYER FRAME " + clientplayer.frames);
 			
 			if(alreadyAtFrame){
 				continue;
@@ -674,7 +662,7 @@ public class Splats extends ApplicationAdapter implements ClientMessageReceiver 
 		} else if (message.startsWith("START")) {
 			start = true;
 		} else if (message.startsWith("CHECK")) {
-//			if(true) return;
+			if(true) return;
 			int id = Integer.parseInt(message.split(" ")[1]);
 			float x = Float.parseFloat(message.split(" ")[2]);
 			float y = Float.parseFloat(message.split(" ")[3]);

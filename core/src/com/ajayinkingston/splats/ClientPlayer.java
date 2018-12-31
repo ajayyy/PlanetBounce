@@ -76,8 +76,6 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 	}
 	
 	public void checkInput(Splats splats, Data data){
-		System.out.println(frames + " frames have passed for clientplayer");
-		
 		if(Gdx.input.isKeyPressed(Input.Keys.D)){
 			right = true;
 		}else{
@@ -127,8 +125,6 @@ public class ClientPlayer extends com.ajayinkingston.planets.server.Player{
 		
 		splats.cam.position.x += xmovement;
 		splats.cam.position.y += ymovement;
-		
-		System.out.println(splats.cam.position.x + " asdasdsadsafreb " + x);
 		
 //		float lerp2 = 1.2f;
 //		double closestangle = Main.getClosestAngle(this, data.planets);
